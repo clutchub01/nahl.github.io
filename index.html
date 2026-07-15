@@ -1,0 +1,3342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudySpark — Study smarter. Stay consistent. Actually enjoy it.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#fff4ed',
+              100: '#ffe6d4',
+              500: '#FF8A00',
+              600: '#e67c00',
+              900: '#7a4504',
+            },
+            dark: {
+              bg: '#050505',
+              card: '#0F0F11',
+              border: '#1F1F22'
+            }
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'float-delayed': 'float 6s ease-in-out 3s infinite',
+            'pulse-glow': 'pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-20px)' },
+            },
+            'pulse-glow': {
+              '0%, 100%': { opacity: 0.4 },
+              '50%': { opacity: 0.8 },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --orange: #FF7A1A;
+      --orange-2: #FF9D42;
+      --amber: #FFB020;
+      --yellow: #FFD666;
+      --xp-gold: #FFC93C;
+      --green: #22C55E;
+      --blue: #3B82F6;
+      --purple: #8B5CF6;
+      --purple-2: #6366F1;
+
+      --bg: #FBF8F3;
+      --bg-soft: #F3EFE7;
+      --surface: rgba(255, 255, 255, 0.6);
+      --surface-solid: #FFFFFF;
+      --border: rgba(20, 16, 10, 0.09);
+      --text: #17140F;
+      --text-dim: #55503F;
+      --text-faint: #8C8672;
+      --glass-blur: blur(18px);
+      --shadow: 0 20px 60px -20px rgba(30, 20, 0, 0.25);
+    }
+
+    html.dark {
+      --bg: #0B0E14;
+      --bg-soft: #10141C;
+      --surface: rgba(255, 255, 255, 0.05);
+      --surface-solid: #12161F;
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #F5F2EA;
+      --text-dim: #A9A491;
+      --text-faint: #6B6759;
+      --shadow: 0 20px 70px -20px rgba(0, 0, 0, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      transition: background .4s ease, color .4s ease;
+      position: relative;
+    }
+
+    .display {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    ::selection {
+      background: var(--orange);
+      color: #fff;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    img,
+    svg {
+      display: block;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* ---------- background texture ---------- */
+    .bg-grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: .5;
+      background-image: radial-gradient(circle at 1px 1px, rgba(120, 110, 90, 0.14) 1px, transparent 0);
+      background-size: 22px 22px;
+    }
+
+    html.dark .bg-grain {
+      opacity: .35;
+      background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.06) 1px, transparent 0);
+    }
+
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-glow::before {
+      content: '';
+      position: absolute;
+      top: -10%;
+      right: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, rgba(255, 122, 26, 0.16), transparent 65%);
+      filter: blur(10px);
+    }
+
+    .bg-glow::after {
+      content: '';
+      position: absolute;
+      bottom: -10%;
+      left: -15%;
+      width: 45vw;
+      height: 45vw;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.13), transparent 65%);
+    }
+
+    /* ---------- streak rail (signature element) ---------- */
+    .streak-rail {
+      position: fixed;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: min(46vh, 420px);
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .streak-track {
+      position: relative;
+      width: 6px;
+      flex: 1;
+      border-radius: 6px;
+      background: var(--border);
+      overflow: hidden;
+    }
+
+    .streak-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(180deg, var(--yellow), var(--orange) 55%, #B34A00);
+      border-radius: 6px;
+      transition: height .12s linear;
+      box-shadow: 0 0 16px rgba(255, 122, 26, 0.55);
+    }
+
+    .streak-flame {
+      font-size: 18px;
+      line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(255, 122, 26, .6));
+      animation: flicker 1.8s ease-in-out infinite;
+    }
+
+    .streak-count {
+      font-size: 11px;
+      color: var(--text-faint);
+      writing-mode: vertical-rl;
+      letter-spacing: .08em;
+    }
+
+    @keyframes flicker {
+
+      0%,
+      100% {
+        transform: scale(1) rotate(-1deg);
+      }
+
+      50% {
+        transform: scale(1.12) rotate(2deg);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .streak-rail {
+        display: none;
+      }
+    }
+
+    /* ---------- nav ---------- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 700;
+      font-size: 19px;
+    }
+
+    .logo .mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--bg), var(--xp-gold));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(255, 122, 26, .4);
+    }
+
+    .navlinks {
+      display: flex;
+      gap: 28px;
+      font-size: 14.5px;
+      font-weight: 500;
+      color: var(--text-dim);
+    }
+
+    .navlinks a {
+      transition: color .2s;
+    }
+
+    .navlinks a:hover {
+      color: var(--text);
+    }
+
+    .navright {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .theme-toggle {
+      width: 46px;
+      height: 26px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface-solid);
+      position: relative;
+      padding: 0;
+    }
+
+    .theme-toggle .knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--orange), var(--xp-gold));
+      transition: transform .3s cubic-bezier(.4, 1.4, .4, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    html.dark .theme-toggle .knob {
+      transform: translateX(20px);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14.5px;
+      border: 1px solid transparent;
+      transition: transform .25s cubic-bezier(.2, .9, .3, 1), box-shadow .25s, background .25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--orange), var(--amber));
+      color: #1a0f00;
+      box-shadow: 0 10px 26px -8px rgba(255, 122, 26, .55);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.015);
+      box-shadow: 0 16px 34px -8px rgba(255, 122, 26, .65);
+    }
+
+    .btn-ghost {
+      background: var(--surface-solid);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn-ghost:hover {
+      transform: translateY(-2px);
+      border-color: var(--orange);
+    }
+
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 13px;
+      border-radius: 10px;
+    }
+
+    .btn:active {
+      transform: scale(.97);
+    }
+
+    .nav-cta {
+      display: none;
+    }
+
+    @media(min-width:860px) {
+      .nav-cta {
+        display: inline-flex;
+      }
+    }
+
+    @media(max-width:860px) {
+      .navlinks {
+        display: none;
+      }
+    }
+
+    /* ---------- hero ---------- */
+    .hero {
+      position: relative;
+      padding: 76px 24px 40px;
+      z-index: 1;
+    }
+
+    .hero-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    @media(max-width:960px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+      }
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-dim);
+      backdrop-filter: var(--glass-blur);
+      margin-bottom: 22px;
+    }
+
+    .eyebrow .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .25);
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 5.4vw, 68px);
+      line-height: 1.03;
+      letter-spacing: -.02em;
+      font-weight: 700;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 .grad {
+      background: linear-gradient(100deg, var(--orange), var(--xp-gold) 55%, var(--amber));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p.sub {
+      font-size: 18.5px;
+      line-height: 1.6;
+      color: var(--text-dim);
+      max-width: 520px;
+      margin-bottom: 32px;
+    }
+
+    @media(max-width:960px) {
+      .hero p.sub {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    @media(max-width:960px) {
+      .hero-ctas {
+        justify-content: center;
+      }
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    @media(max-width:960px) {
+      .hero-stats {
+        justify-content: center;
+      }
+    }
+
+    .hstat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hstat b {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .hstat span {
+      font-size: 12.5px;
+      color: var(--text-faint);
+    }
+
+    /* --- Phone 3D Premium True Extrusion Container --- */
+    .phone-stage {
+      perspective: 1600px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+
+    .phone {
+      width: 410px;
+      height: 864px;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateY(-10deg) rotateX(4deg);
+      transition: transform 0.1s ease-out;
+      z-index: 2;
+    }
+
+    /* 3D Extrusion Layers (The solid edge) */
+    .phone-frame {
+      position: absolute;
+      inset: 0;
+      border-radius: 55px;
+      border: 2px solid;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    /* Simulating a rounded Titanium ambient shadow based on depth */
+    .edge-1 {
+      transform: translateZ(-1px);
+      border-color: #ffffff;
+    }
+
+    .edge-2 {
+      transform: translateZ(-2px);
+      border-color: #f8fafc;
+    }
+
+    .edge-3 {
+      transform: translateZ(-3px);
+      border-color: #f1f5f9;
+    }
+
+    .edge-4 {
+      transform: translateZ(-4px);
+      border-color: #e2e8f0;
+    }
+
+    .edge-5 {
+      transform: translateZ(-5px);
+      border-color: #cbd5e1;
+    }
+
+    .edge-6 {
+      transform: translateZ(-6px);
+      border-color: #cbd5e1;
+    }
+
+    .edge-7 {
+      transform: translateZ(-7px);
+      border-color: #cbd5e1;
+    }
+
+    .edge-8 {
+      transform: translateZ(-8px);
+      border-color: #94a3b8;
+    }
+
+    .edge-9 {
+      transform: translateZ(-9px);
+      border-color: #94a3b8;
+    }
+
+    .edge-10 {
+      transform: translateZ(-10px);
+      border-color: #94a3b8;
+    }
+
+    .edge-11 {
+      transform: translateZ(-11px);
+      border-color: #64748b;
+    }
+
+    .edge-12 {
+      transform: translateZ(-12px);
+      border-color: #64748b;
+    }
+
+    .edge-13 {
+      transform: translateZ(-13px);
+      border-color: #475569;
+    }
+
+    .edge-14 {
+      transform: translateZ(-14px);
+      border-color: #334155;
+    }
+
+    .edge-15 {
+      transform: translateZ(-15px);
+      border-color: #1e293b;
+      background: #0f172a;
+      box-shadow: -20px 30px 60px -10px rgba(0, 0, 0, 0.6), 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Hardware Buttons in 3D Space */
+    .phone-button {
+      position: absolute;
+      background: #e2e8f0;
+      border: 1px solid #94a3b8;
+      box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.6);
+      transform-style: preserve-3d;
+    }
+
+    .action-btn {
+      top: 130px;
+      left: -4px;
+      width: 4px;
+      height: 35px;
+      border-radius: 4px 0 0 4px;
+      transform: translateZ(-8px);
+    }
+
+    .volume-up {
+      top: 190px;
+      left: -4px;
+      width: 4px;
+      height: 60px;
+      border-radius: 4px 0 0 4px;
+      transform: translateZ(-8px);
+    }
+
+    .volume-down {
+      top: 265px;
+      left: -4px;
+      width: 4px;
+      height: 60px;
+      border-radius: 4px 0 0 4px;
+      transform: translateZ(-8px);
+    }
+
+    .power-btn {
+      top: 210px;
+      right: -4px;
+      width: 4px;
+      height: 80px;
+      border-radius: 0 4px 4px 0;
+      transform: translateZ(-8px);
+    }
+
+    /* Front Screen Face */
+    .phone-front {
+      position: absolute;
+      inset: 0;
+      border-radius: 55px;
+      background: #000;
+      padding: 12px;
+      transform: translateZ(0px);
+      transform-style: preserve-3d;
+      box-shadow: inset 0 0 0 2px #444, inset 0 0 0 8px #000;
+    }
+
+    /* Front glass glare */
+    .phone-front::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 55px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0) 100%);
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .dynamic-island {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateZ(1px);
+      width: 120px;
+      height: 35px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 100;
+      box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.15);
+    }
+
+    .app-container {
+      width: 100%;
+      height: 100%;
+      border-radius: 43px;
+      background: #101010;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      color: #FFFFFF;
+      padding: 55px 20px 100px 20px;
+    }
+
+    .app-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .app-container {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* --- Topbar --- */
+    .p-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .p-greeting {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .p-greeting .name {
+      color: var(--orange);
+    }
+
+    .p-top-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .p-btn-add {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--orange);
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .p-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #2A2A2C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    /* --- Stats Card --- */
+    .p-card-main {
+      background: #1C1C1E;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .p-level-ring {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: conic-gradient(#555 35%, #2A2A2E 35%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .p-level-inner {
+      width: 56px;
+      height: 56px;
+      background: #1C1C1E;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .p-level-inner span:first-child {
+      font-size: 9px;
+      font-weight: 700;
+      color: #8E8E93;
+      letter-spacing: 0.05em;
+    }
+
+    .p-level-inner span:last-child {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .p-xp-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      flex: 1;
+      padding-left: 16px;
+    }
+
+    .p-pill {
+      background: #444;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .p-xp-val {
+      font-size: 28px;
+      font-weight: 800;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .p-xp-val span {
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .p-xp-next {
+      font-size: 11px;
+      font-weight: 600;
+      color: #8E8E93;
+    }
+
+    .p-xp-next span {
+      color: #fff;
+    }
+
+    .p-streak-box {
+      background: #251B13;
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 75px;
+      border: 1px solid rgba(255, 122, 0, 0.15);
+    }
+
+    .p-streak-box .flame {
+      font-size: 24px;
+      margin-bottom: 2px;
+    }
+
+    .p-streak-box .num {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--orange);
+      line-height: 1;
+    }
+
+    .p-streak-box .lbl {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--orange);
+      text-align: center;
+      margin-top: 4px;
+      line-height: 1.1;
+    }
+
+    /* --- Quote Card --- */
+    .p-quote-card {
+      background: #1C1C1E;
+      border-radius: 20px;
+      padding: 20px 16px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .p-quote-bg {
+      position: absolute;
+      right: 16px;
+      top: -10px;
+      font-size: 160px;
+      font-family: serif;
+      font-weight: bold;
+      color: rgba(255, 255, 255, 0.03);
+      line-height: 1;
+      user-select: none;
+    }
+
+    .p-icon-box {
+      background: var(--orange);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .p-quote-text {
+      z-index: 1;
+      padding-top: 2px;
+    }
+
+    .p-quote-text p {
+      font-size: 15px;
+      font-style: italic;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.4;
+      color: #fff;
+    }
+
+    .p-quote-text span {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--orange);
+      text-transform: uppercase;
+    }
+
+    /* --- Progress Card --- */
+    .p-prog-card {
+      background: #1C1C1E;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .p-prog-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .p-prog-info span:first-child {
+      font-size: 11px;
+      font-weight: 700;
+      color: #8E8E93;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .p-prog-info span:last-child {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .p-status-pill {
+      background: #11381A;
+      color: #44D169;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* --- Quick Actions --- */
+    .section-header {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+
+    .p-qa-grid {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .p-qa-btn {
+      flex: 1;
+      aspect-ratio: 1;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .p-qa-btn span {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .p-qa-btn.dark {
+      background: #222224;
+    }
+
+    .p-qa-btn.orange {
+      background: var(--orange);
+    }
+
+    .p-qa-btn.green {
+      background: var(--green);
+    }
+
+    /* --- Recent Library --- */
+    .p-recent-card {
+      background: #1C1C1E;
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .p-recent-icon {
+      width: 48px;
+      height: 48px;
+      background: #3B200C;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .p-recent-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .p-recent-info h4 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .p-recent-info p {
+      font-size: 13px;
+      color: #8E8E93;
+    }
+
+    .p-recent-trash {
+      color: #8E8E93;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* --- Bottom Nav --- */
+    .p-bottom-nav {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: #1C1C1E;
+      border-radius: 30px;
+      display: flex;
+      justify-content: space-between;
+      padding: 16px 28px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+    }
+
+    .p-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: #8E8E93;
+      cursor: pointer;
+    }
+
+    .p-nav-item.active {
+      color: var(--orange);
+    }
+
+    .p-nav-item svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .p-nav-item.active svg {
+      stroke: currentColor;
+    }
+
+    .p-nav-item span {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .p-nav-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #2A2A2C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    /* The Hover Badges */
+    .float-badge {
+      position: absolute;
+      z-index: 30;
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      backdrop-filter: var(--glass-blur);
+      /* Base Transform places it in 3D Space */
+      animation: float 5s ease-in-out infinite;
+    }
+
+    .float-badge b {
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .float-badge span {
+      font-size: 10.5px;
+      color: var(--text-faint);
+      display: block;
+    }
+
+    .fb1 {
+      top: 6%;
+      left: -16%;
+      animation-delay: .2s;
+    }
+
+    .fb2 {
+      bottom: 14%;
+      right: -18%;
+      animation-delay: 1.1s;
+    }
+
+    .fb3 {
+      top: 44%;
+      left: -20%;
+      animation-delay: 2s;
+    }
+
+    @media(max-width:1100px) {
+
+      .fb1,
+      .fb2,
+      .fb3 {
+        display: none;
+      }
+    }
+
+    /* Animate on the Y & Z axis so it visibly floats in front of the phone */
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px) translateZ(50px);
+      }
+
+      50% {
+        transform: translateY(-12px) translateZ(50px);
+      }
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: .5;
+    }
+
+    /* ---------- section shells ---------- */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 96px 24px;
+    }
+
+    .section-head {
+      max-width: 640px;
+      margin: 0 auto 56px;
+      text-align: center;
+    }
+
+    .section-head.left {
+      margin-left: 0;
+      text-align: left;
+    }
+
+    .kicker {
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .section-head h2 {
+      font-size: clamp(30px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -.015em;
+      line-height: 1.08;
+      margin-bottom: 16px;
+    }
+
+    .section-head p {
+      color: var(--text-dim);
+      font-size: 16.5px;
+      line-height: 1.6;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s cubic-bezier(.2, .7, .2, 1), transform .7s cubic-bezier(.2, .7, .2, 1);
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* social proof */
+    .proof-strip {
+      padding: 34px 24px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .proof-row {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .proof-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--text-faint);
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    /* problems */
+    .problem-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    @media(max-width:860px) {
+      .problem-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:560px) {
+      .problem-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .problem-card {
+      padding: 26px 22px;
+      border-radius: 20px;
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+    }
+
+    .problem-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255, 122, 26, .35);
+      box-shadow: var(--shadow);
+    }
+
+    .problem-card .quote {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.35;
+      margin-bottom: 10px;
+    }
+
+    .problem-card .note {
+      font-size: 13.5px;
+      color: var(--text-faint);
+    }
+
+    /* solution cards - flip */
+    .solution-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    @media(max-width:860px) {
+      .solution-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:560px) {
+      .solution-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .flip-card {
+      perspective: 1400px;
+      height: 220px;
+    }
+
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform .6s cubic-bezier(.4, .2, .2, 1);
+    }
+
+    .flip-card:hover .flip-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 24px;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border: 1px solid var(--border);
+    }
+
+    .flip-front {
+      background: var(--surface-solid);
+    }
+
+    .flip-front .ic {
+      font-size: 28px;
+      margin-bottom: 14px;
+    }
+
+    .flip-front b {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 17px;
+    }
+
+    .flip-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(140deg, var(--orange), var(--amber));
+      color: #1a0f00;
+    }
+
+    .flip-back p {
+      font-size: 14px;
+      line-height: 1.55;
+      font-weight: 500;
+    }
+
+    /* ---------- PRODUCT SHOWCASE (35%) ---------- */
+    .showcase {
+      background: var(--bg-soft);
+    }
+
+    .feature-row {
+      max-width: 1140px;
+      margin: 0 auto 56px;
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 44px;
+      align-items: center;
+    }
+
+    .feature-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .feature-row.rev {
+      direction: rtl;
+    }
+
+    .feature-row.rev>* {
+      direction: ltr;
+    }
+
+    @media(max-width:840px) {
+
+      .feature-row,
+      .feature-row.rev {
+        grid-template-columns: 1fr;
+        direction: ltr;
+        margin-bottom: 40px;
+      }
+    }
+
+    .feature-visual {
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      min-height: 280px;
+    }
+
+    .feature-visual img {
+      max-width: 70%;
+      max-height: 260px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 18px;
+      box-shadow: 0 20px 44px -16px rgba(0, 0, 0, .4);
+      border: 1px solid var(--border);
+    }
+
+    .feature-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+    }
+
+    .feature-text h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -.01em;
+    }
+
+    .feature-text p {
+      color: var(--text-dim);
+      font-size: 14.5px;
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+
+    .feature-outcome {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    /* --- Survey / Review Collection --- */
+    .survey-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    @media(max-width: 640px) {
+      .survey-wrap {
+        padding: 32px 20px;
+      }
+    }
+
+    .survey-wrap .field textarea {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14.5px;
+      font-family: inherit;
+      min-height: 120px;
+      resize: vertical;
+      transition: border-color .2s;
+    }
+
+    .survey-wrap .field textarea:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
+
+    /* CSS-only interactive star rating */
+    .star-rating {
+      display: flex;
+      flex-direction: row-reverse;
+      /* Reverses order for CSS sibling selector logic */
+      justify-content: flex-end;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .star-rating input {
+      display: none;
+    }
+
+    .star-rating label {
+      cursor: pointer;
+      font-size: 28px;
+      color: var(--border);
+      transition: color 0.2s, transform 0.2s;
+      line-height: 1;
+    }
+
+    .star-rating label:hover,
+    .star-rating label:hover~label,
+    .star-rating input:checked~label {
+      color: var(--xp-gold);
+    }
+
+    .star-rating label:active {
+      transform: scale(0.9);
+    }
+
+    /* Survey Success State */
+    #surveySuccess {
+      display: none;
+      text-align: center;
+      padding: 30px 0;
+      animation: modalIn .4s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    #surveySuccess .emoji {
+      font-size: 56px;
+      margin-bottom: 16px;
+    }
+
+    #surveySuccess h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    #surveySuccess p {
+      color: var(--text-dim);
+      font-size: 15px;
+    }
+
+    /* mini mockups inside feature visuals */
+    .mini-flash {
+      width: 78%;
+      height: 64%;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #1c2030, #12141c);
+      position: relative;
+      box-shadow: 0 20px 40px -14px rgba(0, 0, 0, .5);
+    }
+
+    .mini-flash::before {
+      content: 'PDF → Flashcards';
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: #7d8391;
+    }
+
+    .mini-flash .cardstack {
+      position: absolute;
+      inset: 38px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mini-flash .cline {
+      height: 11px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .mini-flash .cline.hl {
+      background: linear-gradient(90deg, var(--purple), var(--blue));
+      width: 60%;
+    }
+
+    .mini-plan {
+      width: 78%;
+      height: 64%;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #1c2030, #12141c);
+      position: relative;
+      padding: 16px;
+      box-shadow: 0 20px 40px -14px rgba(0, 0, 0, .5);
+    }
+
+    .mini-plan .drow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .mini-plan .ddot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .mini-plan .dtext {
+      font-size: 11px;
+      color: #c8cbd4;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .mini-assist {
+      width: 78%;
+      height: 64%;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #1c2030, #12141c);
+      position: relative;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: flex-end;
+      box-shadow: 0 20px 40px -14px rgba(0, 0, 0, .5);
+    }
+
+    .bubble {
+      padding: 9px 12px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      max-width: 80%;
+      line-height: 1.4;
+    }
+
+    .bubble.ai {
+      background: rgba(139, 92, 246, .18);
+      border: 1px solid rgba(139, 92, 246, .3);
+      align-self: flex-start;
+      color: #dcd6ff;
+    }
+
+    .bubble.me {
+      background: rgba(255, 122, 26, .18);
+      border: 1px solid rgba(255, 122, 26, .3);
+      align-self: flex-end;
+      color: #ffd9b3;
+    }
+
+    .mini-test {
+      width: 78%;
+      height: 64%;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #1c2030, #12141c);
+      position: relative;
+      padding: 16px;
+      box-shadow: 0 20px 40px -14px rgba(0, 0, 0, .5);
+    }
+
+    .mini-test .qopt {
+      padding: 8px 10px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .05);
+      font-size: 10.5px;
+      color: #c8cbd4;
+      margin-top: 8px;
+      border: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .mini-test .qopt.correct {
+      background: rgba(34, 197, 94, .16);
+      border-color: rgba(34, 197, 94, .4);
+      color: #b7f0c9;
+    }
+
+    /* gamification */
+    .gami-wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      border-radius: 28px;
+      padding: 56px;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 20%, rgba(255, 122, 26, .14), transparent 55%), var(--surface-solid);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    @media(max-width:640px) {
+      .gami-wrap {
+        padding: 32px 20px;
+      }
+    }
+
+    .gami-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 40px;
+    }
+
+    @media(max-width:860px) {
+      .gami-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:480px) {
+      .gami-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gami-card {
+      padding: 22px;
+      border-radius: 18px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .gami-card .ic {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .gami-card b {
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15.5px;
+      margin-bottom: 6px;
+    }
+
+    .gami-card span {
+      font-size: 12.5px;
+      color: var(--text-faint);
+      line-height: 1.5;
+    }
+
+    .rank-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+
+    .rank-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      width: 24px;
+      color: var(--text-faint);
+    }
+
+    .rank-bar-wrap {
+      flex: 1;
+      height: 7px;
+      border-radius: 7px;
+      background: var(--border);
+      overflow: hidden;
+    }
+
+    .rank-bar {
+      height: 100%;
+      border-radius: 7px;
+      background: linear-gradient(90deg, var(--orange), var(--xp-gold));
+    }
+
+    .rank-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      width: 110px;
+    }
+
+    .rank-xp {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-faint);
+      width: 70px;
+      text-align: right;
+    }
+
+    /* AI section - dark always */
+    .ai-section {
+      background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, .35), transparent 55%), #0B0E14;
+      color: #F5F2EA;
+      border-radius: 32px;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 80px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media(max-width:640px) {
+      .ai-section {
+        padding: 56px 22px;
+        border-radius: 22px;
+      }
+    }
+
+    .ai-section .section-head p {
+      color: #A9A491;
+    }
+
+    .ai-section .kicker {
+      color: var(--purple);
+    }
+
+    .ai-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 44px;
+    }
+
+    @media(max-width:860px) {
+      .ai-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:480px) {
+      .ai-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ai-card {
+      padding: 24px 20px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .045);
+      border: 1px solid rgba(255, 255, 255, .09);
+      transition: transform .3s, border-color .3s;
+    }
+
+    .ai-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(139, 92, 246, .5);
+    }
+
+    .ai-card .ic {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      margin-bottom: 14px;
+    }
+
+    .ai-card b {
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 15px;
+      margin-bottom: 7px;
+    }
+
+    .ai-card span {
+      font-size: 12.5px;
+      color: #9a9686;
+      line-height: 1.55;
+    }
+
+    /* how it works */
+    .steps-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .step-row {
+      display: grid;
+      grid-template-columns: 70px 1fr auto;
+      gap: 24px;
+      padding-bottom: 44px;
+      position: relative;
+      align-items: start;
+    }
+
+    .step-row:last-child {
+      padding-bottom: 0;
+    }
+
+    .step-row::before {
+      content: '';
+      position: absolute;
+      left: 34px;
+      top: 60px;
+      bottom: -8px;
+      width: 2px;
+      background: repeating-linear-gradient(180deg, var(--border) 0 6px, transparent 6px 12px);
+    }
+
+    .step-row:last-child::before {
+      display: none;
+    }
+
+    .step-num {
+      width: 68px;
+      height: 68px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 22px;
+      background: linear-gradient(135deg, var(--orange), var(--amber));
+      color: #1a0f00;
+      box-shadow: 0 10px 24px -8px rgba(255, 122, 26, .5);
+      flex-shrink: 0;
+    }
+
+    .step-body {
+      padding-top: 8px;
+    }
+
+    .step-body h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .step-body p {
+      color: var(--text-dim);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* comparison table */
+    .compare-wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      overflow-x: auto;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    table.compare {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+      background: var(--surface-solid);
+    }
+
+    table.compare th,
+    table.compare td {
+      padding: 16px 18px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    table.compare th {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    table.compare th.ss-col {
+      color: var(--orange);
+      position: relative;
+    }
+
+    table.compare td.ss-col {
+      background: rgba(255, 122, 26, .06);
+      font-weight: 600;
+    }
+
+    table.compare tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.compare td .yes {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    table.compare td .no {
+      color: var(--text-faint);
+    }
+
+    table.compare .feat-name {
+      font-weight: 600;
+    }
+
+    /* testimonials */
+    .testi-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    @media(max-width:860px) {
+      .testi-grid {
+        grid-template-columns: 1fr;
+        max-width: 520px;
+      }
+    }
+
+    .testi-card {
+      padding: 26px;
+      border-radius: 20px;
+      background: var(--surface-solid);
+      border: 1px dashed var(--border);
+      position: relative;
+    }
+
+    .testi-card .stars {
+      color: var(--xp-gold);
+      font-size: 13px;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+
+    .testi-card p {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--text-dim);
+      margin-bottom: 18px;
+      font-style: italic;
+    }
+
+    .testi-who {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .testi-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--orange), var(--purple));
+      flex-shrink: 0;
+    }
+
+    .testi-who b {
+      font-size: 13.5px;
+      display: block;
+    }
+
+    .testi-who span {
+      font-size: 12px;
+      color: var(--text-faint);
+    }
+
+    .testi-badge {
+      position: absolute;
+      top: -10px;
+      right: 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 10.5px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      color: var(--text-faint);
+      font-weight: 600;
+    }
+
+    /* FAQ */
+    .faq-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faq-q {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 4px;
+      background: none;
+      border: none;
+      text-align: left;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16.5px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .faq-q .chev {
+      transition: transform .3s;
+      color: var(--orange);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .faq-item.open .faq-q .chev {
+      transform: rotate(45deg);
+    }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease, padding .35s ease;
+    }
+
+    .faq-item.open .faq-a {
+      max-height: 200px;
+      padding-bottom: 22px;
+    }
+
+    .faq-a p {
+      color: var(--text-dim);
+      font-size: 14.5px;
+      line-height: 1.65;
+      max-width: 640px;
+    }
+
+    /* final CTA */
+    .final-cta {
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+      border-radius: 32px;
+      padding: 80px 40px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--orange), var(--xp-gold) 60%, var(--amber));
+      color: #1a0f00;
+    }
+
+    @media(max-width:640px) {
+      .final-cta {
+        padding: 56px 24px;
+        border-radius: 24px;
+      }
+    }
+
+    .final-cta h2 {
+      font-size: clamp(30px, 4.6vw, 48px);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 16px;
+    }
+
+    .final-cta p {
+      font-size: 16.5px;
+      opacity: .85;
+      max-width: 460px;
+      margin: 0 auto 32px;
+      font-weight: 500;
+    }
+
+    .final-cta .btn-ghost {
+      background: #1a0f00;
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .final-cta .btn-primary {
+      background: #1a0f00;
+      color: #fff;
+    }
+
+    /* footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 56px 24px 28px;
+    }
+
+    .foot-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    @media(max-width:760px) {
+      .foot-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .foot-col h4 {
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-faint);
+      margin-bottom: 16px;
+    }
+
+    .foot-col a {
+      display: block;
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 11px;
+    }
+
+    .foot-col a:hover {
+      color: var(--orange);
+    }
+
+    .foot-bottom {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-faint);
+    }
+
+    /* modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 8, 4, .55);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 440px;
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      animation: modalIn .35s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px) scale(.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--bg-soft);
+      border: none;
+      font-size: 15px;
+      color: var(--text-dim);
+    }
+
+    .modal h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .modal p.msub {
+      font-size: 13.5px;
+      color: var(--text-faint);
+      margin-bottom: 24px;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-dim);
+    }
+
+    .field input {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color .2s;
+    }
+
+    .field input:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
+
+    .field .opt-tag {
+      font-weight: 400;
+      color: var(--text-faint);
+      font-size: 11px;
+    }
+
+    .modal .btn-primary {
+      width: 100%;
+      margin-top: 6px;
+      padding: 13px;
+    }
+
+    .success-state {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .success-state .emoji {
+      font-size: 44px;
+      margin-bottom: 14px;
+    }
+
+    .success-state h3 {
+      margin-bottom: 8px;
+    }
+
+    .success-state p {
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+
+    /* focus visibility */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 2px;
+    }
+
+    .counter {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* --- photo-enabled variants (real app screenshots) --- */
+    .flip-front.has-photo {
+      background-size: cover;
+      background-position: top center;
+      color: #fff;
+      border-color: rgba(255, 255, 255, .15);
+    }
+
+    .flip-front.has-photo b {
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, .4);
+    }
+
+    .flip-front.has-photo .ic {
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .5));
+    }
+
+    .feature-visual.photo {
+      padding: 28px;
+      overflow: hidden;
+    }
+
+    .feature-visual.photo img {
+      max-width: 78%;
+      max-height: 92%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      border-radius: 22px;
+      box-shadow: 0 24px 60px -18px rgba(0, 0, 0, .45);
+      border: 1px solid var(--border);
+    }
+
+    .gami-showcase {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-top: 44px;
+    }
+
+    @media(max-width:760px) {
+      .gami-showcase {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gami-shot {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      box-shadow: var(--shadow);
+      max-height: 460px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .gami-shot img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .step-thumb {
+      width: 104px;
+      height: 104px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      background: var(--surface-solid);
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .step-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    @media(max-width:760px) {
+      .step-thumb {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="bg-grain"></div>
+  <div class="bg-glow"></div>
+
+  <div class="streak-rail" aria-hidden="true">
+    <span class="streak-flame">🔥</span>
+    <div class="streak-track">
+      <div class="streak-fill" id="streakFill"></div>
+    </div>
+    <span class="streak-count" id="streakCount">DAY 0</span>
+  </div>
+
+  <header>
+    <nav>
+      <div class="logo"><img class="mark" src="logo.png" alt="StudySpark Logo">StudySpark</div>
+      <div class="navlinks">
+        <a href="#problem">Why</a>
+        <a href="#features">Features</a>
+        <a href="#proof">Reviews</a>
+      </div>
+      <div class="navright">
+        <button class="btn btn-primary btn-sm nav-cta" onclick="openModal()">Join the Waitlist</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO (MAINTAINED EXACTLY) -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow reveal in"><span class="dot"></span>Beta opening soon — built for university
+          students</div>
+        <h1 class="display reveal in">Stop cramming.<br>Start <span class="grad">earning XP.</span></h1>
+        <p class="sub reveal in" style="transition-delay:.1s">StudySpark turns your notes into a personalized
+          study plan, your flashcards into AI-generated mock tests, and every study session into visible
+          progress —
+          so consistency finally feels good.</p>
+        <div class="hero-ctas reveal in" style="transition-delay:.18s">
+          <button class="btn btn-primary" onclick="openModal()">Join the Beta Waitlist →</button>
+        </div>
+        <div class="hero-stats reveal in" style="transition-delay:.24s">
+          <div class="hstat"><b class="counter" data-count="0" data-target="14200">0</b><span>study sessions
+              logged in testing</span></div>
+          <div class="hstat"><b class="counter" data-count="0" data-target="97">0</b><span>% said it beat
+              their old routine</span></div>
+          <div class="hstat"><b>Free</b><span>during beta</span></div>
+        </div>
+      </div>
+
+      <div class="phone-stage reveal in" style="transition-delay:.1s">
+        <div class="float-badge fb1"><span style="font-size:18px;">🏅</span><span><b>Achievement
+              unlocked</b><span>7-Day
+              Streak</span></span></div>
+        <div class="float-badge fb2"><span style="font-size:18px;">📈</span><span><b>+40 XP</b><span>Mock test
+              completed</span></span></div>
+        <div class="float-badge fb3"><span style="font-size:18px;">🧠</span><span><b>AI Plan</b><span>Ready for
+              tomorrow</span></span></div>
+
+        <!-- True CSS 3D Extruded Phone Wrapper -->
+        <div class="phone">
+          <div class="phone-frame edge-15"></div>
+          <div class="phone-frame edge-14"></div>
+          <div class="phone-frame edge-13"></div>
+          <div class="phone-frame edge-12"></div>
+          <div class="phone-frame edge-11"></div>
+          <div class="phone-frame edge-10"></div>
+          <div class="phone-frame edge-9"></div>
+          <div class="phone-frame edge-8"></div>
+          <div class="phone-frame edge-7"></div>
+          <div class="phone-frame edge-6"></div>
+          <div class="phone-frame edge-5"></div>
+          <div class="phone-frame edge-4"></div>
+          <div class="phone-frame edge-3"></div>
+          <div class="phone-frame edge-2"></div>
+          <div class="phone-frame edge-1"></div>
+
+          <!-- Hardware Buttons Protruding in 3D Space -->
+          <div class="phone-button action-btn"></div>
+          <div class="phone-button volume-up"></div>
+          <div class="phone-button volume-down"></div>
+          <div class="phone-button power-btn"></div>
+
+          <!-- Front Screen Assembly -->
+          <div class="phone-front">
+            <div class="dynamic-island"></div>
+            <div class="app-container">
+
+              <!-- Topbar -->
+              <div class="p-topbar">
+                <div class="p-greeting">Good afternoon,<br><span class="name">Muhd_Am!</span></div>
+                <div class="p-top-actions">
+                  <button class="p-btn-add">+</button>
+                  <div class="p-avatar">🧔🏽‍♂️</div>
+                </div>
+              </div>
+
+              <!-- Stats Card -->
+              <div class="p-card-main">
+                <div class="p-level-ring">
+                  <div class="p-level-inner">
+                    <span>LEVEL</span>
+                    <span>2</span>
+                  </div>
+                </div>
+                <div class="p-xp-info">
+                  <div class="p-pill">BEGINNER</div>
+                  <div class="p-xp-val">180 <span>XP</span></div>
+                  <div class="p-xp-next"><span>220 XP</span> to next</div>
+                </div>
+                <div class="p-streak-box">
+                  <span class="flame">🔥</span>
+                  <span class="num">1</span>
+                  <span class="lbl">DAY<br>STREAK</span>
+                </div>
+              </div>
+
+              <!-- Quote Card -->
+              <div class="p-quote-card">
+                <div class="p-quote-bg">”</div>
+                <div class="p-icon-box">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z">
+                    </path>
+                    <path
+                      d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z">
+                    </path>
+                  </svg>
+                </div>
+                <div class="p-quote-text">
+                  <p>"Just five more minutes can change your grade."</p>
+                  <span>- ANONYMOUS</span>
+                </div>
+              </div>
+
+              <!-- Progress Card -->
+              <div class="p-prog-card">
+                <div class="p-prog-info">
+                  <span>TODAY'S PROGRESS</span>
+                  <span>You're 30% of the way there</span>
+                </div>
+                <div class="p-status-pill">Active</div>
+              </div>
+
+              <!-- Quick Actions -->
+              <div class="section-header">Quick Actions</div>
+              <div class="p-qa-grid">
+                <div class="p-qa-btn dark">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  <span>Schedule</span>
+                </div>
+                <div class="p-qa-btn orange">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                  </svg>
+                  <span>Flashcards</span>
+                </div>
+                <div class="p-qa-btn green">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                    <line x1="12" y1="18" x2="12.01" y2="18" />
+                  </svg>
+                  <span>Mock Test</span>
+                </div>
+              </div>
+
+              <!-- Bottom Nav -->
+              <div class="p-bottom-nav">
+                <div class="p-nav-item active">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                  <span>Home</span>
+                </div>
+                <div class="p-nav-item">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                  </svg>
+                  <span>Notes</span>
+                </div>
+                <div class="p-nav-item">
+                  <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="8" r="7" />
+                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                  </svg>
+                  <span>Rank</span>
+                </div>
+                <div class="p-nav-item">
+                  <div class="p-nav-avatar">🧔🏽‍♂️</div>
+                  <span>Profile</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Proof Logos -->
+  <section class="py-10 border-y border-gray-100 dark:border-dark-border bg-white/50 dark:bg-white/5">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <p class="text-sm font-medium text-gray-400 uppercase tracking-widest mb-6">Designed for students from top
+        universities</p>
+      <div class="flex flex-wrap justify-center gap-8 md:gap-16 opacity-50 grayscale">
+        <!-- Placeholders for Univ Logos -->
+        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="graduation-cap"></i>
+          Stanford</div>
+        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="book-open"></i> MIT
+        </div>
+        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="library"></i> Oxford
+        </div>
+        <div class="flex items-center gap-2 font-display font-bold text-xl"><i data-lucide="landmark"></i>
+          Harvard</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section id="problem">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">The reality</span>
+        <h2 class="display">Your study system is fighting you.</h2>
+        <p>Not because you're not smart enough. Because nothing in your routine was built to make consistency
+          easy.</p>
+      </div>
+      <div class="problem-grid">
+        <div class="problem-card reveal">
+          <div class="quote display">"I study hard but forget everything."</div>
+          <div class="note">Rereading feels productive. It isn't — your brain needs recall, not repetition.
+          </div>
+        </div>
+        <div class="problem-card reveal" style="transition-delay:.06s">
+          <div class="quote display">"I always cram."</div>
+          <div class="note">Without a plan, the deadline becomes the plan. Every single time.</div>
+        </div>
+        <div class="problem-card reveal" style="transition-delay:.12s">
+          <div class="quote display">"My timetable never works."</div>
+          <div class="note">Generic schedules ignore your actual courses, energy, and deadlines.</div>
+        </div>
+        <div class="problem-card reveal" style="transition-delay:.18s">
+          <div class="quote display">"I lose motivation fast."</div>
+          <div class="note">Studying gives no feedback loop — so it's the first thing you drop.</div>
+        </div>
+        <div class="problem-card reveal" style="transition-delay:.24s">
+          <div class="quote display">"I don't know where to start."</div>
+          <div class="note">Scattered notes across apps, folders, and photos. No single source of truth.</div>
+        </div>
+        <div class="problem-card reveal" style="transition-delay:.3s">
+          <div class="quote display">"My phone wins. Every time."</div>
+          <div class="note">Social media is engineered for consistency. Studying, until now, wasn't.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM (REWRITTEN) -->
+  <section id="problem-2">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">The old way</span>
+        <h2 class="display">Traditional studying is broken.</h2>
+      </div>
+      <div class="problem-grid">
+        <div class="problem-card reveal">
+          <div class="quote display">"Highlighting isn't learning."</div>
+          <div class="note">Passive review gives you a false sense of security. Your brain needs active
+            recall, not endless re-reading.</div>
+        </div>
+        <div class="problem-card reveal" style="transition-delay:.06s">
+          <div class="quote display">"Information overload."</div>
+          <div class="note">Your syllabus is spread across a messy combination of five different apps,
+            folders, and random screenshots.</div>
+        </div>
+        <div class="problem-card reveal" style="transition-delay:.12s">
+          <div class="quote display">"Zero accountability."</div>
+          <div class="note">You sit down to study for finals and wake up two hours later scrolling TikTok. The
+            distractions win.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT SHOWCASE — 35% -->
+  <section id="showcase" class="showcase">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Inside the app</span>
+        <h2 class="display">One system. Every feature doing one job well.</h2>
+        <p>Not a dashboard of toggles — a system that studies alongside you.</p>
+      </div>
+
+      <div class="feature-row reveal">
+        <div class="feature-visual"><img src="planner.png">
+        </div>
+        <div class="feature-text">
+          <span class="feature-tag" style="background:rgba(139,92,246,.15); color:var(--purple);">AI Study
+            Plans</span>
+          <h3 class="display">A plan built around your real timetable.</h3>
+          <p>Add your courses and deadlines — StudySpark builds a day-by-day plan sized to your actual free time, and
+            adjusts the moment your week changes.</p>
+          <div class="feature-outcome">✓ 3.2 fewer cram sessions per term, on average</div>
+        </div>
+      </div>
+
+      <div class="feature-row rev reveal">
+        <div class="feature-visual"><img src="Flashcards.png" t="StudySpark flashcard, tap to flip"></div>
+        <div class="feature-text">
+          <span class="feature-tag" style="background:rgba(255,122,26,.15); color:var(--orange);">PDF →
+            Flashcards</span>
+          <h3 class="display">Your lecture slides, instantly quizzable.</h3>
+          <p>Upload a PDF of notes or slides — StudySpark extracts the key concepts and builds a full flashcard deck
+            in seconds, ready for spaced repetition.</p>
+          <div class="feature-outcome">✓ A 40-page PDF becomes a 25-minute review</div>
+        </div>
+      </div>
+
+      <div class="feature-row reveal">
+        <div class="feature-visual"><img src="mocketest.png" alt="StudySpark timed mock test question"></div>
+        <div class="feature-text">
+          <span class="feature-tag" style="background:rgba(34,197,94,.15); color:var(--green);">AI Mock Tests</span>
+          <h3 class="display">Practice under real exam conditions.</h3>
+          <p>Mock tests generated from your own material, timed like the real thing, showing exactly where the marks
+            were lost.</p>
+          <div class="feature-outcome">✓ +17 points average improvement on mock scores</div>
+        </div>
+      </div>
+
+      <div class="gami-wrap reveal">
+        <div class="section-head left" style="margin-bottom: 24px;">
+          <span class="kicker">Gamified Consistency</span>
+          <h2 class="display">Rewire your brain to love learning.</h2>
+          <p>Your brain naturally chases dopamine. We built dynamic tracking metrics, global leaderboards, and
+            a robust streak system to ensure your study habits compound daily rather than fizzling out.</p>
+        </div>
+        <div class="gami-grid">
+          <div class="gami-card">
+            <div class="ic">🔥</div>
+            <b>Protect Your Streak</b>
+            <span>Turn 15 minutes of daily review into an unbreakable chain.</span>
+          </div>
+          <div class="gami-card">
+            <div class="ic">🏆</div>
+            <b>Climb Leaderboards</b>
+            <span>Compete with your cohort and rank up by logging deep work.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="demoSection">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Getting started</span>
+        <h2 class="display">Three steps. That's the whole onboarding.</h2>
+      </div>
+      <div class="steps-wrap reveal">
+        <div class="step-row">
+          <div class="step-num">01</div>
+          <div class="step-body">
+            <h3 class="display">Create your account</h3>
+            <p>Sign up in under a minute — no credit card, no long setup.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">02</div>
+          <div class="step-body">
+            <h3 class="display">Upload notes or your timetable</h3>
+            <p>Drop in a PDF, photo, or course schedule. StudySpark organizes it for you.</p>
+          </div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">03</div>
+          <div class="step-body">
+            <h3 class="display">Start earning XP while improving grades</h3>
+            <p>Your first AI study plan and flashcard deck are ready before your next class.</p>
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section style="background:var(--bg-soft);">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Why StudySpark</span>
+        <h2 class="display">Compared to what you're using now.</h2>
+      </div>
+      <div class="compare-wrap reveal">
+        <table class="compare">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Traditional studying</th>
+              <th>Note apps</th>
+              <th>Flashcard apps</th>
+              <th class="ss-col">StudySpark</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="feat-name">Personalized study plan</td>
+              <td><span class="no">—</span></td>
+              <td><span class="no">—</span></td>
+              <td><span class="no">—</span></td>
+              <td class="ss-col"><span class="yes">✓</span></td>
+            </tr>
+            <tr>
+              <td class="feat-name">AI-generated flashcards</td>
+              <td><span class="no">—</span></td>
+              <td><span class="no">—</span></td>
+              <td><span class="no">Manual</span></td>
+              <td class="ss-col"><span class="yes">✓ Automatic</span></td>
+            </tr>
+            <tr>
+              <td class="feat-name">Mock tests from your notes</td>
+              <td><span class="no">—</span></td>
+              <td><span class="no">—</span></td>
+              <td><span class="no">—</span></td>
+              <td class="ss-col"><span class="yes">✓</span></td>
+            </tr>
+            <tr>
+              <td class="feat-name">Gamified consistency (XP, streaks)</td>
+              <td><span class="no">—</span></td>
+              <td><span class="no">—</span></td>
+              <td><span class="no">Rarely</span></td>
+              <td class="ss-col"><span class="yes">✓</span></td>
+            </tr>
+            <tr>
+              <td class="feat-name">Progress analytics</td>
+              <td><span class="no">—</span></td>
+              <td><span class="no">Basic</span></td>
+              <td><span class="no">Basic</span></td>
+              <td class="ss-col"><span class="yes">✓ Full breakdown</span></td>
+            </tr>
+            <tr>
+              <td class="feat-name">Built for university course load</td>
+              <td><span class="no">—</span></td>
+              <td><span class="no">—</span></td>
+              <td><span class="no">—</span></td>
+              <td class="ss-col"><span class="yes">✓</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- SOCIAL PROOF (REWRITTEN) -->
+  <section id="proof" style="padding: 0;">
+    <div class="proof-strip">
+      <div class="proof-row">
+        <div class="proof-item">🎓 Built for university students</div>
+        <div class="proof-item">📚 Powered by proven learning science</div>
+        <div class="proof-item">🤖 AI + Active Recall</div>
+        <div class="proof-item">🔒 Privacy-first architecture</div>
+      </div>
+    </div>
+    <div class="wrap" style="margin-top: 60px; margin-bottom: 60px;">
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>"I uploaded my 400-page biology textbook and had a custom study deck generated in 30 seconds. It
+            feels illegal to be this efficient."</p>
+          <div class="testi-who">
+            <div>
+              <b>Elena R.</b>
+              <span>Pre-Med Student</span>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>"The streak system is dangerously addictive. I literally found myself doing flashcards at a party
+            just to keep my fire emoji alive."</p>
+          <div class="testi-who">
+            <div>
+              <b>Marcus T.</b>
+              <span>Law Student</span>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>"Finally, an app that actually understands active recall. The exam simulator exposes exactly what
+            I don't know before the real test does."</p>
+          <div class="testi-who">
+            <div>
+              <b>Aisha K.</b>
+              <span>Neuroscience Major</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- SURVEY SECTION -->
+  <section id="submit-review">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Have your say</span>
+        <h2 class="display">Help shape StudySpark.</h2>
+        <p>Are you an early tester? Drop your feedback below to be featured on our wall of fame.</p>
+      </div>
+
+      <div class="survey-wrap reveal" style="transition-delay: .1s;">
+        <form id="reviewForm" onsubmit="submitReview(event)">
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="field">
+              <label for="revName">First Name & Initial</label>
+              <input type="text" id="revName" placeholder="e.g. Elena R." required>
+            </div>
+            <div class="field">
+              <label for="revSchool">University / School</label>
+              <input type="text" id="revSchool" placeholder="e.g. Stanford University" required>
+            </div>
+          </div>
+
+          <div class="field" style="margin-top: 8px;">
+            <label>How would you rate your experience?</label>
+            <div class="star-rating">
+              <input type="radio" id="star5" name="rating" value="5" required><label for="star5">★</label>
+              <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+              <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+              <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+              <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+            </div>
+          </div>
+
+          <div class="field" style="margin-top: 16px;">
+            <label for="revText">Your Review</label>
+            <textarea id="revText" placeholder="How has StudySpark changed your study routine? Be honest!"
+              required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 12px; padding: 14px;">
+            Submit Feedback
+          </button>
+        </form>
+
+        <!-- Hidden Success State -->
+        <div id="surveySuccess">
+          <div class="emoji">🎉</div>
+          <h3>Review Submitted!</h3>
+          <p>Thank you for helping us build a better way to study.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA (REWRITTEN) -->
+  <section id="cta" style="padding-top: 40px; padding-bottom: 40px;">
+    <div class="wrap">
+      <div class="final-cta reveal">
+        <h2>Stop leaving your grades to chance.</h2>
+        <p>Join the beta waitlist today and lock in free early-adopter access before our public launch.</p>
+        <button class="btn btn-ghost" onclick="openModal()">Secure Your Spot →</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h3>Join the Waitlist</h3>
+      <p class="msub">Get early access to StudySpark.</p>
+      <!-- Update this specific part inside your modal -->
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="waitlistEmail" placeholder="you@university.edu" required>
+      </div>
+      <button type="button" class="btn btn-primary modal-btn" onclick="submitWaitlist()">Join Waitlist</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-grid">
+      <div class="foot-col">
+        <div class="logo"><img class="mark" src="logo.png" alt="StudySpark Logo">StudySpark</div>
+        <p style="font-size: 13.5px; color: var(--text-faint); line-height: 1.6;">The AI Study OS for university
+          students. Actually enjoy learning.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#proof">Reviews</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="foot-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 StudySpark. All rights reserved.</span>
+      <span>Built by Lunnovate.</span>
+    </div>
+  </footer>
+
+  <script>
+      // 1. Reveal-on-scroll — self-contained, no CDN dependency, runs first
+      (function () {
+        var els = document.querySelectorAll('.reveal');
+        var revealIO = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in');
+              revealIO.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.15 });
+        els.forEach(function (el) { revealIO.observe(el); });
+      })();
+
+    // 2. Icons (guarded — won't block anything else if it fails)
+    try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (e) { console.warn('lucide init failed', e); }
+
+    // 3. Modal Logic
+    function openModal() { document.getElementById('modal').classList.add('open'); }
+    function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+    // 4. Dark Mode Toggle Logic (guarded — the button may not exist in every layout)
+    var themeToggleBtn = document.querySelector('.theme-toggle');
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', function () {
+        document.documentElement.classList.toggle('dark');
+      });
+    }
+
+    // 5. FAQ Accordion Logic
+    document.querySelectorAll('.faq-item').forEach(function (item) {
+      item.addEventListener('click', function () {
+        item.classList.toggle('open');
+      });
+    });
+
+    // 6. Hero Counter Animation
+    const counters = document.querySelectorAll('.counter');
+    const observerOptions = { threshold: 0.5 };
+
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const counter = entry.target;
+          const target = +counter.getAttribute('data-target');
+          const updateCount = () => {
+            const count = +counter.innerText;
+            const increment = target / 100;
+            if (count < target) {
+              counter.innerText = Math.ceil(count + increment);
+              setTimeout(updateCount, 10);
+            } else { counter.innerText = target; }
+          };
+          updateCount();
+          counterObserver.unobserve(counter);
+        }
+      });
+    }, observerOptions);
+
+    counters.forEach(counter => counterObserver.observe(counter));
+
+    const API_URL = 'https://script.google.com/macros/s/AKfycbw-hhD0sFno42H6-4UpJg-Bc_vnNwC25r4TZ3Tj6Oc8QBBHOAb0zx4cAd6McGzyhWKv/exec';
+
+
+    // --- 1. WAITLIST SUBMISSION ---
+    function submitWaitlist() {
+      const emailInput = document.getElementById('waitlistEmail');
+      const email = emailInput.value.trim();
+      if (!email) return;
+
+      const btn = document.querySelector('.modal-btn');
+      btn.innerText = "Joining...";
+
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ type: 'waitlist', email: email }),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+      })
+        .then(res => res.json())
+        .then(data => {
+          // Check if the backend sent an error message
+          if (data.result === "error") {
+            console.error("Backend Error:", data.message);
+            btn.innerText = "Error. Check Console.";
+            return;
+          }
+
+          btn.innerText = "You're on the list!";
+          emailInput.value = '';
+          setTimeout(() => {
+            closeModal();
+            btn.innerText = "Join Waitlist";
+          }, 2000);
+        })
+        .catch(err => {
+          console.error("Fetch Error:", err);
+          btn.innerText = "Error. Try again.";
+        });
+    }
+
+    // --- 2. REVIEW SUBMISSION ---
+    function submitReview(e) {
+      e.preventDefault();
+
+      const btn = document.querySelector('#reviewForm .btn-primary');
+      btn.innerText = "Submitting...";
+
+      const name = document.getElementById('revName').value;
+      const school = document.getElementById('revSchool').value;
+      const text = document.getElementById('revText').value;
+      const ratingElement = document.querySelector('input[name="rating"]:checked');
+      const rating = ratingElement ? ratingElement.value : "5";
+
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          type: 'review',
+          name: name,
+          school: school,
+          rating: rating,
+          text: text
+        }),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+      })
+        .then(res => res.json())
+        .then(data => {
+          // Check if the backend sent an error message
+          if (data.result === "error") {
+            console.error("Backend Error:", data.message);
+            btn.innerText = "Error. Check Console.";
+            return;
+          }
+
+          document.getElementById('reviewForm').style.display = 'none';
+          document.getElementById('surveySuccess').style.display = 'block';
+        })
+        .catch(err => {
+          console.error("Fetch Error:", err);
+          btn.innerText = "Error. Try again.";
+        });
+    }
+    // --- 3. FETCH AND RENDER REVIEWS ---
+    async function loadReviews() {
+      try {
+        const res = await fetch(API_URL);
+        const reviews = await res.json();
+        const grid = document.querySelector('.testi-grid');
+
+        // Only update if we actually got reviews back
+        if (reviews && reviews.length > 0) {
+          grid.innerHTML = '';
+
+          reviews.reverse().forEach(rev => {
+            const starCount = parseInt(rev.rating) || 5;
+            const stars = '★'.repeat(starCount) + '☆'.repeat(5 - starCount);
+
+            grid.innerHTML += `
+            <div class="testi-card">
+              <div class="stars">${stars}</div>
+              <p>"${rev.text}"</p>
+              <div class="testi-who">
+                <div>
+                  <b>${rev.name}</b>
+                  <span>${rev.school}</span>
+                </div>
+              </div>
+            </div>`;
+          });
+        }
+      } catch (e) {
+        console.error("Error loading live reviews. Falling back to static placeholders.", e);
+      }
+    }
+
+    // Run the fetch function as soon as the page loads
+    document.addEventListener('DOMContentLoaded', loadReviews);
+  </script>
+</body>
+
+</html>
