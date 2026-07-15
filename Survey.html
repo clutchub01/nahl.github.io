@@ -207,9 +207,19 @@
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
-      font-size: 14.5px;
+      /* 16px prevents iOS Safari from auto-zooming the viewport on focus;
+         desktop gets the original 14.5px back via the min-width override below. */
+      font-size: 16px;
       font-family: inherit;
       transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    @media(min-width: 640px) {
+
+      .survey-input,
+      .survey-textarea {
+        font-size: 14.5px;
+      }
     }
 
     .survey-textarea {
@@ -328,6 +338,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
       padding: 14px;
       background: var(--bg-soft);
       border: 1px solid var(--border);
@@ -340,10 +351,26 @@
       font-size: 14px;
     }
 
+    /* Below ~380px, label + 5 stars no longer fit on one line without
+       squeezing or wrapping mid-row. Stack them instead of letting the
+       browser wrap unpredictably. */
+    @media(max-width: 380px) {
+      .feature-rating {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .feature-rating .stars-wrap {
+        align-self: flex-end;
+      }
+    }
+
     .stars-wrap {
       display: flex;
       flex-direction: row-reverse;
       gap: 4px;
+      flex-shrink: 0;
     }
 
     .stars-wrap input {
@@ -356,6 +383,12 @@
       color: var(--border);
       transition: color 0.2s;
       line-height: 1;
+    }
+
+    @media(max-width: 480px) {
+      .stars-wrap label {
+        font-size: 22px;
+      }
     }
 
     .stars-wrap label:hover,
@@ -457,13 +490,11 @@
             <div class="survey-field">
               <label class="main-label">Current Level / Year</label>
               <div class="pill-group">
-                <input type="radio" id="lvl100" name="level" value="100/Freshman" required><label
-                  for="lvl100">100/Freshman</label>
-                <input type="radio" id="lvl200" name="level" value="200/Sophomore"><label
-                  for="lvl200">200/Sophomore</label>
-                <input type="radio" id="lvl300" name="level" value="300/Junior"><label for="lvl300">300/Junior</label>
-                <input type="radio" id="lvl400" name="level" value="400/Senior"><label for="lvl400">400/Senior</label>
-                <input type="radio" id="lvl500" name="level" value="500+ / Grad"><label for="lvl500">500+ / Grad</label>
+                <input type="radio" id="lvl100" name="level" value="100" required><label for="lvl100">100</label>
+                <input type="radio" id="lvl200" name="level" value="200"><label for="lvl200">200</label>
+                <input type="radio" id="lvl300" name="level" value="300"><label for="lvl300">300</label>
+                <input type="radio" id="lvl400" name="level" value="400"><label for="lvl400">400</label>
+                <input type="radio" id="lvl500" name="level" value="500+"><label for="lvl500">500+</label>
               </div>
             </div>
           </div>
@@ -501,13 +532,12 @@
             <div class="survey-field">
               <label class="main-label">What tools do you currently use? (Select all that apply)</label>
               <div class="pill-group">
-                <input type="checkbox" id="tool1" name="tools" value="Google Calendar"><label for="tool1">Google
-                  Calendar</label>
+                <input type="checkbox" id="tool1" name="tools" value="notebookLM"><label for="tool1">notebookLM</label>
                 <input type="checkbox" id="tool2" name="tools" value="Notion"><label for="tool2">Notion</label>
                 <input type="checkbox" id="tool3" name="tools" value="ChatGPT"><label for="tool3">ChatGPT</label>
-                <input type="checkbox" id="tool4" name="tools" value="Anki/Quizlet"><label for="tool4">Anki /
-                  Quizlet</label>
+                <input type="checkbox" id="tool4" name="tools" value="Gemini"><label for="tool4">Gemini</label>
                 <input type="checkbox" id="tool5" name="tools" value="Paper"><label for="tool5">Paper Notebook</label>
+                <input type="checkbox" id="tool6" name="tools" value="Others"><label for="tool6">Others</label>
               </div>
             </div>
           </div>
@@ -652,6 +682,8 @@
                 <input type="radio" id="pay2" name="wouldPay" value="₦500"><label for="pay2">₦500</label>
                 <input type="radio" id="pay3" name="wouldPay" value="₦1000"><label for="pay3">₦1000</label>
                 <input type="radio" id="pay4" name="wouldPay" value="₦2000+"><label for="pay4">₦2000+</label>
+                <input type="radio" id="pay5" name="wouldPay" value="“Depends on the value”"><label for="pay5">“Depends
+                  on the value”</label>
               </div>
             </div>
 
