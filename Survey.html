@@ -4,941 +4,660 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StudySpark — Product Validation Survey</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['Outfit', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#fff4ed',
-              100: '#ffe6d4',
-              500: '#FF8A00',
-              600: '#e67c00',
-              900: '#7a4504',
-            },
-            dark: {
-              bg: '#050505',
-              card: '#0F0F11',
-              border: '#1F1F22'
-            }
-          }
-        }
-      }
-    }
-  </script>
-
+  <title>StudySpark — Survey Full</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <style>
-    /* --- Base Variables --- */
     :root {
-      --orange: #FF7A1A;
-      --amber: #FFB020;
-      --xp-gold: #FFC93C;
       --bg: #FBF8F3;
-      --bg-soft: #F3EFE7;
-      --surface-solid: #FFFFFF;
-      --border: rgba(20, 16, 10, 0.09);
+      --card: #FFFFFF;
+      --orange: #FF7A1A;
+      --accent: #FFB020;
       --text: #17140F;
-      --text-dim: #55503F;
-      --shadow: 0 20px 60px -20px rgba(30, 20, 0, 0.25);
+      --muted: #6B6657;
+      --border: rgba(20, 16, 10, .08);
     }
 
-    html.dark {
-      --bg: #0B0E14;
-      --bg-soft: #10141C;
-      --surface-solid: #12161F;
-      --border: rgba(255, 255, 255, 0.09);
-      --text: #F5F2EA;
-      --text-dim: #A9A491;
-      --shadow: 0 20px 70px -20px rgba(0, 0, 0, 0.7);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Inter', sans-serif;
-      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ambient background */
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 15% -5%, rgba(255, 122, 26, .10), transparent 40%),
+        radial-gradient(circle at 100% 10%, rgba(255, 176, 32, .08), transparent 35%),
+        radial-gradient(circle at 50% 100%, rgba(255, 122, 26, .06), transparent 40%);
+    }
+
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      z-index: 0;
+      opacity: .5;
+    }
+
+    .blob-a {
+      width: 420px;
+      height: 420px;
+      top: -180px;
+      left: -160px;
+      background: radial-gradient(circle, rgba(255, 122, 26, .25), transparent 70%);
+    }
+
+    .blob-b {
+      width: 480px;
+      height: 480px;
+      bottom: -220px;
+      right: -180px;
+      background: radial-gradient(circle, rgba(255, 176, 32, .20), transparent 70%);
     }
 
     .wrap {
-      max-width: 1180px;
+      position: relative;
+      z-index: 1;
+      max-width: 1040px;
       margin: 0 auto;
       padding: 0 24px;
     }
 
-    .display {
-      font-family: 'Outfit', sans-serif;
+    /* ---------- HERO ---------- */
+    .hero {
+      padding: 88px 0 40px;
+      text-align: center;
     }
 
-    /* Buttons */
-    .btn {
+    .logo {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
       gap: 8px;
-      padding: 11px 20px;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 14.5px;
-      cursor: pointer;
-      transition: all .25s ease;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--orange), var(--amber));
-      color: #1a0f00;
-      border: none;
-      box-shadow: 0 10px 26px -8px rgba(255, 122, 26, .55);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 16px 34px -8px rgba(255, 122, 26, .65);
-    }
-
-    .btn-ghost {
-      background: var(--surface-solid);
-      border: 1px solid var(--border);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: .01em;
       color: var(--text);
+      margin-bottom: 56px;
+      opacity: 0;
+      animation: fadeUp .7s ease forwards;
     }
 
-    .btn-ghost:hover {
-      border-color: var(--orange);
-    }
-
-    /* --- Multi-Step Validation Survey --- */
-    .survey-container {
-      max-width: 720px;
-      margin: 0 auto;
-      background: var(--surface-solid);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 40px;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
-    }
-
-    @media(max-width: 640px) {
-      .survey-container {
-        padding: 32px 20px;
-      }
-    }
-
-    /* Progress Bar */
-    .survey-progress {
-      width: 100%;
-      height: 6px;
-      background: var(--border);
-      border-radius: 100px;
-      margin-bottom: 32px;
-      overflow: hidden;
-    }
-
-    .survey-progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--orange), var(--amber));
-      border-radius: 100px;
-      width: 16.6%;
-      /* Step 1 default */
-      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* Step Visibility */
-    .survey-step {
-      display: none;
-      animation: fadeIn 0.4s ease-out forwards;
-    }
-
-    .survey-step.active {
+    .logo-mark {
+      width: 22px;
+      height: 22px;
       display: block;
     }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px 7px 12px;
+      border-radius: 100px;
+      background: rgba(255, 122, 26, .08);
+      border: 1px solid rgba(255, 122, 26, .18);
+      color: var(--orange);
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp .7s ease .05s forwards;
+    }
 
+    .badge svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      font-size: clamp(34px, 6vw, 58px);
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    h1 span {
+      display: block;
+      opacity: 0;
+      animation: fadeUp .7s ease forwards;
+    }
+
+    h1 span:nth-child(1) {
+      animation-delay: .1s;
+    }
+
+    h1 span:nth-child(2) {
+      animation-delay: .18s;
+    }
+
+    h1 span.grad {
+      background: linear-gradient(100deg, var(--orange), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subhead {
+      margin: 24px auto 0;
+      max-width: 480px;
+      color: var(--muted);
+      font-size: 16.5px;
+      line-height: 1.6;
+      opacity: 0;
+      animation: fadeUp .7s ease .26s forwards;
+    }
+
+    /* ---------- HIGHLIGHT CARD ---------- */
+    .card {
+      margin: 48px auto 0;
+      max-width: 520px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 36px 36px 32px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(255, 122, 26, .10), 0 2px 10px rgba(20, 16, 10, .03);
+      opacity: 0;
+      animation: fadeUp .7s ease .34s forwards;
+    }
+
+    .card-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+      background: linear-gradient(140deg, var(--orange), var(--accent));
+      box-shadow: 0 10px 24px rgba(255, 122, 26, .30);
+    }
+
+    .card-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+      max-width: 380px;
+      margin: 0 auto;
+    }
+
+    .cta-row {
+      margin-top: 26px;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 15.5px;
+      color: #fff;
+      padding: 15px 30px;
+      border-radius: 100px;
+      background: linear-gradient(100deg, var(--orange), var(--accent));
+      box-shadow: 0 14px 30px rgba(255, 122, 26, .30);
+      transition: transform .35s cubic-bezier(.2, .8, .2, 1), box-shadow .35s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 38px rgba(255, 122, 26, .38);
+    }
+
+    .btn:active {
+      transform: translateY(-1px);
+    }
+
+    .btn svg {
+      width: 16px;
+      height: 16px;
+      transition: transform .3s ease;
+    }
+
+    .btn:hover svg {
+      transform: translateX(3px);
+    }
+
+    .fine-print {
+      margin-top: 14px;
+      font-size: 12.5px;
+      color: var(--muted);
+      letter-spacing: .01em;
+    }
+
+    /* form state */
+    .form-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 26px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .form-row input {
+      flex: 1;
+      min-width: 0;
+      padding: 14px 18px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-family: 'Inter', sans-serif;
+      font-size: 14.5px;
+      color: var(--text);
+      outline: none;
+      transition: border-color .25s ease, box-shadow .25s ease;
+    }
+
+    .form-row input:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 4px rgba(255, 122, 26, .12);
+    }
+
+    .form-row .btn {
+      flex-shrink: 0;
+      padding: 14px 24px;
+    }
+
+    .success-msg {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--orange);
+      font-weight: 600;
+      font-size: 14.5px;
+      margin-top: 22px;
+    }
+
+    .success-msg svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* ---------- BENEFITS ---------- */
+    .benefits {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin: 72px 0 8px;
+    }
+
+    .bcard {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px 20px;
+      text-align: left;
+      transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+      opacity: 0;
+      animation: fadeUp .6s ease forwards;
+    }
+
+    .bcard:nth-child(1) {
+      animation-delay: .40s;
+    }
+
+    .bcard:nth-child(2) {
+      animation-delay: .46s;
+    }
+
+    .bcard:nth-child(3) {
+      animation-delay: .52s;
+    }
+
+    .bcard:nth-child(4) {
+      animation-delay: .58s;
+    }
+
+    .bcard:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(20, 16, 10, .08);
+      border-color: rgba(255, 122, 26, .25);
+    }
+
+    .bcard .emoji {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 122, 26, .08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    .bcard h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .bcard p {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ---------- SOCIAL PROOF ---------- */
+    .social {
+      text-align: center;
+      margin: 56px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      opacity: 0;
+      animation: fadeUp .7s ease .64s forwards;
+    }
+
+    .avatars {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+
+    .avatars span {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      margin-left: -8px;
+      display: inline-block;
+      background: linear-gradient(135deg, var(--orange), var(--accent));
+    }
+
+    .avatars span:first-child {
+      margin-left: 0;
+    }
+
+    /* ---------- FOOTER ---------- */
+    footer {
+      text-align: center;
+      padding: 64px 0 48px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    footer .heart {
+      color: var(--orange);
+    }
+
+    @keyframes fadeUp {
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
 
-    .survey-step h3 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 8px;
+    h1 span,
+    .badge,
+    .subhead,
+    .card,
+    .bcard,
+    .social,
+    .logo {
+      transform: translateY(20px);
     }
 
-    .survey-step p.step-sub {
-      color: var(--text-dim);
-      font-size: 14.5px;
-      margin-bottom: 24px;
-    }
-
-    /* Form Elements */
-    .survey-field {
-      margin-bottom: 20px;
-    }
-
-    .survey-field label.main-label {
-      display: block;
-      font-weight: 600;
-      font-size: 14px;
-      margin-bottom: 10px;
-      color: var(--text);
-    }
-
-    .survey-input,
-    .survey-textarea {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      /* 16px prevents iOS Safari from auto-zooming the viewport on focus;
-         desktop gets the original 14.5px back via the min-width override below. */
-      font-size: 16px;
-      font-family: inherit;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    @media(min-width: 640px) {
-
-      .survey-input,
-      .survey-textarea {
-        font-size: 14.5px;
+    @media (max-width: 720px) {
+      .benefits {
+        grid-template-columns: repeat(2, 1fr);
       }
-    }
 
-    .survey-textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
+      .hero {
+        padding-top: 64px;
+      }
 
-    .survey-input:focus,
-    .survey-textarea:focus {
-      outline: none;
-      border-color: var(--orange);
-      box-shadow: 0 0 0 3px rgba(255, 122, 26, 0.15);
-    }
+      .card {
+        padding: 30px 24px 28px;
+      }
 
-    /* Pill Radios and Checkboxes */
-    .pill-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .pill-group input[type="radio"],
-    .pill-group input[type="checkbox"] {
-      display: none;
-    }
-
-    .pill-group label {
-      padding: 10px 18px;
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      font-size: 13.5px;
-      font-weight: 500;
-      cursor: pointer;
-      background: var(--bg-soft);
-      color: var(--text-dim);
-      transition: all 0.2s;
-      user-select: none;
-    }
-
-    .pill-group label:hover {
-      border-color: var(--orange);
-      color: var(--text);
-    }
-
-    .pill-group input:checked+label {
-      background: var(--orange);
-      border-color: var(--orange);
-      color: #1a0f00;
-      font-weight: 600;
-      box-shadow: 0 4px 12px rgba(255, 122, 26, 0.3);
-    }
-
-    /* Likert Scale for Pain Points */
-    .likert-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .likert-item {
-      background: var(--bg-soft);
-      padding: 16px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-    }
-
-    .likert-item h4 {
-      font-size: 14.5px;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .likert-options {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .likert-options input {
-      display: none;
-    }
-
-    .likert-options label {
-      flex: 1;
-      text-align: center;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 10px 4px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-dim);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    @media(max-width: 500px) {
-      .likert-options {
+      .form-row {
         flex-direction: column;
       }
+    }
 
-      .likert-options label {
-        padding: 12px;
-        text-align: left;
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      h1 span,
+      .badge,
+      .subhead,
+      .card,
+      .bcard,
+      .social,
+      .logo {
+        opacity: 1;
+        transform: none;
       }
     }
 
-    .likert-options input:checked+label {
-      background: var(--orange);
-      border-color: var(--orange);
-      color: #1a0f00;
-    }
-
-    /* Star Rating (Feature Validation) */
-    .feature-rating {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px;
-      background: var(--bg-soft);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      margin-bottom: 10px;
-    }
-
-    .feature-rating span {
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    /* Below ~380px, label + 5 stars no longer fit on one line without
-       squeezing or wrapping mid-row. Stack them instead of letting the
-       browser wrap unpredictably. */
-    @media(max-width: 380px) {
-      .feature-rating {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-
-      .feature-rating .stars-wrap {
-        align-self: flex-end;
-      }
-    }
-
-    .stars-wrap {
-      display: flex;
-      flex-direction: row-reverse;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-
-    .stars-wrap input {
-      display: none;
-    }
-
-    .stars-wrap label {
-      cursor: pointer;
-      font-size: 24px;
-      color: var(--border);
-      transition: color 0.2s;
-      line-height: 1;
-    }
-
-    @media(max-width: 480px) {
-      .stars-wrap label {
-        font-size: 22px;
-      }
-    }
-
-    .stars-wrap label:hover,
-    .stars-wrap label:hover~label,
-    .stars-wrap input:checked~label {
-      color: var(--xp-gold);
-    }
-
-    /* Footer Buttons */
-    .survey-footer {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 32px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-    }
-
-    /* Success Screen */
-    #surveyResult {
-      display: none;
-      text-align: center;
-      padding: 20px 0;
-      animation: fadeIn .4s ease-out forwards;
-    }
-
-    #surveyResult .icon-lg {
-      font-size: 64px;
-      margin-bottom: 20px;
-    }
-
-    #surveyResult h3 {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    #surveyResult .insight-box {
-      background: rgba(255, 122, 26, 0.1);
-      border: 1px solid rgba(255, 122, 26, 0.3);
-      border-radius: 16px;
-      padding: 24px;
-      margin: 24px 0;
-    }
-
-    #surveyResult .insight-box h4 {
-      color: var(--orange);
-      font-size: 13px;
-      text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      margin-bottom: 8px;
-    }
-
-    #surveyResult .insight-box p {
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 1.5;
-      color: var(--text);
+    :focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 3px;
     }
   </style>
-
 </head>
 
 <body>
-  <!-- PRODUCT VALIDATION SURVEY -->
-  <section id="validation" style="padding-top: 60px; padding-bottom: 80px;">
-    <div class="wrap">
-      <div class="text-center mb-10 reveal">
-        <span class="text-[12.5px] font-bold tracking-[0.14em] uppercase text-[#FF7A1A] block mb-[14px]">Student
-          Research</span>
-        <h2 class="display text-4xl font-bold mb-4">Help us build the perfect study tool.</h2>
-        <p class="text-[var(--text-dim)] max-w-2xl mx-auto">This 3-minute survey helps us understand what actually works
-          (and what doesn't) for university students.</p>
+
+  <div class="bg-glow"></div>
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+
+  <div class="wrap">
+
+    <div class="hero">
+      <div class="logo">
+        <svg class="logo-mark" viewBox="0 0 24 24" fill="none">
+          <path d="M13 2 L4 14 H11 L10 22 L20 9 H13 L13 2Z" fill="#FF7A1A" />
+        </svg>
+        StudySpark
       </div>
 
-      <div class="survey-container reveal">
-        <!-- Progress Bar -->
-        <div class="survey-progress">
-          <div class="survey-progress-fill" id="surveyProgressFill"></div>
+      <div class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Survey full
+      </div>
+
+      <h1>
+        <span>We've received</span>
+        <span class="grad">all the responses we needed</span>
+      </h1>
+
+      <p class="subhead">Thank you for helping us validate StudySpark. Our research has reached its response limit —
+        we're now turning those insights into the best AI study companion we can build.</p>
+
+      <div class="card" id="waitlistCard">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path
+              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+            </path>
+          </svg>
         </div>
+        <h3>Your interest means a lot</h3>
+        <p>Although the survey is closed, you can still become one of our earliest supporters. Join the waitlist and be
+          among the first students to try StudySpark.</p>
 
-        <form id="productSurveyForm">
-
-          <!-- STEP 1: Profile -->
-          <div class="survey-step active" id="step1">
-            <h3>Step 1: About You</h3>
-            <p class="step-sub">Let's start with the basics.</p>
-
-            <div class="survey-field">
-              <label class="main-label">University / Institution</label>
-              <input type="text" name="school" class="survey-input" placeholder="e.g. Stanford University" required>
-            </div>
-
-            <div class="survey-field">
-              <label class="main-label">Course of Study / Major</label>
-              <input type="text" name="course" class="survey-input" placeholder="e.g. Neuroscience" required>
-            </div>
-
-            <div class="survey-field">
-              <label class="main-label">Current Level / Year</label>
-              <div class="pill-group">
-                <input type="radio" id="lvl100" name="level" value="100" required><label for="lvl100">100</label>
-                <input type="radio" id="lvl200" name="level" value="200"><label for="lvl200">200</label>
-                <input type="radio" id="lvl300" name="level" value="300"><label for="lvl300">300</label>
-                <input type="radio" id="lvl400" name="level" value="400"><label for="lvl400">400</label>
-                <input type="radio" id="lvl500" name="level" value="500+"><label for="lvl500">500+</label>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 2: Habits & Tools -->
-          <div class="survey-step" id="step2">
-            <h3>Step 2: Study Habits</h3>
-            <p class="step-sub">How do you currently handle your workload?</p>
-
-            <div class="survey-field">
-              <label class="main-label">How many hours do you study weekly? (outside classes)</label>
-              <div class="pill-group">
-                <input type="radio" id="hrs1" name="studyHours" value="Less than 3" required><label for="hrs1">&lt; 3
-                  hrs</label>
-                <input type="radio" id="hrs2" name="studyHours" value="3–6 hrs"><label for="hrs2">3–6 hrs</label>
-                <input type="radio" id="hrs3" name="studyHours" value="6–10 hrs"><label for="hrs3">6–10 hrs</label>
-                <input type="radio" id="hrs4" name="studyHours" value="10+ hrs"><label for="hrs4">10+ hrs</label>
-              </div>
-            </div>
-
-            <div class="survey-field">
-              <label class="main-label">How do you usually prepare for exams?</label>
-              <div class="pill-group">
-                <input type="radio" id="prep1" name="prepMethod" value="Read notes" required><label for="prep1">Re-read
-                  notes</label>
-                <input type="radio" id="prep2" name="prepMethod" value="Watch YouTube"><label
-                  for="prep2">YouTube</label>
-                <input type="radio" id="prep3" name="prepMethod" value="Practice questions"><label for="prep3">Practice
-                  Qs</label>
-                <input type="radio" id="prep4" name="prepMethod" value="Cramming"><label for="prep4">Cram the night
-                  before</label>
-              </div>
-            </div>
-
-            <div class="survey-field">
-              <label class="main-label">What tools do you currently use? (Select all that apply)</label>
-              <div class="pill-group">
-                <input type="checkbox" id="tool1" name="tools" value="notebookLM"><label for="tool1">notebookLM</label>
-                <input type="checkbox" id="tool2" name="tools" value="Notion"><label for="tool2">Notion</label>
-                <input type="checkbox" id="tool3" name="tools" value="ChatGPT"><label for="tool3">ChatGPT</label>
-                <input type="checkbox" id="tool4" name="tools" value="Gemini"><label for="tool4">Gemini</label>
-                <input type="checkbox" id="tool5" name="tools" value="Paper"><label for="tool5">Paper Notebook</label>
-                <input type="checkbox" id="tool6" name="tools" value="Others"><label for="tool6">Others</label>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 3: Pain Points -->
-          <div class="survey-step" id="step3">
-            <h3>Step 3: The Struggles</h3>
-            <p class="step-sub">How often do you experience the following?</p>
-
-            <div class="likert-grid">
-              <div class="likert-item">
-                <h4>"I procrastinate and start studying too late."</h4>
-                <div class="likert-options">
-                  <input type="radio" id="pp1_1" name="ppProcrastinate" value="Never" required><label
-                    for="pp1_1">Never</label>
-                  <input type="radio" id="pp1_2" name="ppProcrastinate" value="Rarely"><label for="pp1_2">Rarely</label>
-                  <input type="radio" id="pp1_3" name="ppProcrastinate" value="Sometimes"><label
-                    for="pp1_3">Sometimes</label>
-                  <input type="radio" id="pp1_4" name="ppProcrastinate" value="Often"><label for="pp1_4">Often</label>
-                  <input type="radio" id="pp1_5" name="ppProcrastinate" value="Always"><label for="pp1_5">Always</label>
-                </div>
-              </div>
-              <div class="likert-item">
-                <h4>"I read my notes but forget the information during the test."</h4>
-                <div class="likert-options">
-                  <input type="radio" id="pp2_1" name="ppForget" value="Never" required><label for="pp2_1">Never</label>
-                  <input type="radio" id="pp2_2" name="ppForget" value="Rarely"><label for="pp2_2">Rarely</label>
-                  <input type="radio" id="pp2_3" name="ppForget" value="Sometimes"><label for="pp2_3">Sometimes</label>
-                  <input type="radio" id="pp2_4" name="ppForget" value="Often"><label for="pp2_4">Often</label>
-                  <input type="radio" id="pp2_5" name="ppForget" value="Always"><label for="pp2_5">Always</label>
-                </div>
-              </div>
-              <div class="likert-item">
-                <h4>"I get distracted by my phone or social media."</h4>
-                <div class="likert-options">
-                  <input type="radio" id="pp3_1" name="ppDistracted" value="Never" required><label
-                    for="pp3_1">Never</label>
-                  <input type="radio" id="pp3_2" name="ppDistracted" value="Rarely"><label for="pp3_2">Rarely</label>
-                  <input type="radio" id="pp3_3" name="ppDistracted" value="Sometimes"><label
-                    for="pp3_3">Sometimes</label>
-                  <input type="radio" id="pp3_4" name="ppDistracted" value="Often"><label for="pp3_4">Often</label>
-                  <input type="radio" id="pp3_5" name="ppDistracted" value="Always"><label for="pp3_5">Always</label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 4: Top Challenge -->
-          <div class="survey-step" id="step4">
-            <h3>Step 4: The Biggest Problem</h3>
-            <p class="step-sub">If you had to pick just one, what holds you back the most?</p>
-
-            <div class="survey-field">
-              <div class="pill-group" style="display: flex; flex-direction: column;">
-                <input type="radio" id="top1" name="topProblem" value="Procrastination" required><label for="top1">①
-                  Procrastination & Inconsistency</label>
-                <input type="radio" id="top2" name="topProblem" value="Forgetting"><label for="top2">② Forgetting what I
-                  read</label>
-                <input type="radio" id="top3" name="topProblem" value="Motivation"><label for="top3">③ Losing motivation
-                  quickly</label>
-                <input type="radio" id="top4" name="topProblem" value="Time management"><label for="top4">④ Time
-                  management & Scheduling</label>
-                <input type="radio" id="top5" name="topProblem" value="Distractions"><label for="top5">⑤ Social media /
-                  Phone distractions</label>
-                <input type="radio" id="top6" name="topProblem" value="Poor notes"><label for="top6">⑥ Disorganized &
-                  messy notes</label>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 5: Feature Validation -->
-          <div class="survey-step" id="step5">
-            <h3>Step 5: Feature Interest</h3>
-            <p class="step-sub">How useful would these StudySpark features be to you?</p>
-
-            <div class="feature-rating">
-              <span>AI-Generated Flashcards</span>
-              <div class="stars-wrap">
-                <input type="radio" id="f1_5" name="featFlashcards" value="5" required><label for="f1_5">★</label>
-                <input type="radio" id="f1_4" name="featFlashcards" value="4"><label for="f1_4">★</label>
-                <input type="radio" id="f1_3" name="featFlashcards" value="3"><label for="f1_3">★</label>
-                <input type="radio" id="f1_2" name="featFlashcards" value="2"><label for="f1_2">★</label>
-                <input type="radio" id="f1_1" name="featFlashcards" value="1"><label for="f1_1">★</label>
-              </div>
-            </div>
-
-            <div class="feature-rating">
-              <span>Smart Timetable Scheduler</span>
-              <div class="stars-wrap">
-                <input type="radio" id="f2_5" name="featTimetable" value="5" required><label for="f2_5">★</label>
-                <input type="radio" id="f2_4" name="featTimetable" value="4"><label for="f2_4">★</label>
-                <input type="radio" id="f2_3" name="featTimetable" value="3"><label for="f2_3">★</label>
-                <input type="radio" id="f2_2" name="featTimetable" value="2"><label for="f2_2">★</label>
-                <input type="radio" id="f2_1" name="featTimetable" value="1"><label for="f2_1">★</label>
-              </div>
-            </div>
-
-            <div class="feature-rating">
-              <span>Mock Test Simulator</span>
-              <div class="stars-wrap">
-                <input type="radio" id="f3_5" name="featMock" value="5" required><label for="f3_5">★</label>
-                <input type="radio" id="f3_4" name="featMock" value="4"><label for="f3_4">★</label>
-                <input type="radio" id="f3_3" name="featMock" value="3"><label for="f3_3">★</label>
-                <input type="radio" id="f3_2" name="featMock" value="2"><label for="f3_2">★</label>
-                <input type="radio" id="f3_1" name="featMock" value="1"><label for="f3_1">★</label>
-              </div>
-            </div>
-
-            <div class="feature-rating">
-              <span>Gamification (XP & Streaks)</span>
-              <div class="stars-wrap">
-                <input type="radio" id="f4_5" name="featGamification" value="5" required><label for="f4_5">★</label>
-                <input type="radio" id="f4_4" name="featGamification" value="4"><label for="f4_4">★</label>
-                <input type="radio" id="f4_3" name="featGamification" value="3"><label for="f4_3">★</label>
-                <input type="radio" id="f4_2" name="featGamification" value="2"><label for="f4_2">★</label>
-                <input type="radio" id="f4_1" name="featGamification" value="1"><label for="f4_1">★</label>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 6: Fit & Feedback -->
-          <div class="survey-step" id="step6">
-            <h3>Step 6: Final Thoughts</h3>
-            <p class="step-sub">Wrapping up. Would you actually use this?</p>
-
-            <div class="survey-field">
-              <label class="main-label">Would you download StudySpark?</label>
-              <div class="pill-group">
-                <input type="radio" id="use1" name="wouldUse" value="Definitely" required><label
-                  for="use1">Definitely</label>
-                <input type="radio" id="use2" name="wouldUse" value="Maybe"><label for="use2">Maybe</label>
-                <input type="radio" id="use3" name="wouldUse" value="Probably not"><label for="use3">Probably
-                  not</label>
-              </div>
-            </div>
-
-            <div class="survey-field">
-              <label class="main-label">How much would you realistically pay monthly?</label>
-              <div class="pill-group">
-                <input type="radio" id="pay1" name="wouldPay" value="Free only" required><label for="pay1">Free
-                  only</label>
-                <input type="radio" id="pay2" name="wouldPay" value="₦500"><label for="pay2">₦500</label>
-                <input type="radio" id="pay3" name="wouldPay" value="₦1000"><label for="pay3">₦1000</label>
-                <input type="radio" id="pay4" name="wouldPay" value="₦2000+"><label for="pay4">₦2000+</label>
-                <input type="radio" id="pay5" name="wouldPay" value="“Depends on the value”"><label for="pay5">“Depends
-                  on the value”</label>
-              </div>
-            </div>
-
-            <div class="survey-field">
-              <label class="main-label">If you could build your dream study app, what would it do?</label>
-              <textarea name="suggestions" class="survey-textarea" placeholder="Share your ideas..."
-                required></textarea>
-            </div>
-          </div>
-
-          <!-- Navigation -->
-          <div class="survey-footer">
-            <button type="button" class="btn btn-ghost" id="btnSurveyBack" style="visibility: hidden;">← Back</button>
-            <button type="button" class="btn btn-primary" id="btnSurveyNext">Next Step →</button>
-          </div>
+        <form class="form-row" id="waitlistForm" style="display:none;">
+          <input type="email" id="emailInput" placeholder="you@school.edu" required aria-label="Email address">
+          <button type="submit" class="btn">Join</button>
         </form>
 
-        <!-- Final Dynamic Result Screen -->
-        <div id="surveyResult">
-          <div class="icon-lg">🎉</div>
-          <h3 class="display">Thanks for helping out!</h3>
-          <p>We've recorded your answers safely.</p>
-
-          <div class="insight-box">
-            <h4>Your Top Challenge</h4>
-            <p>It looks like you struggle most with <span id="dynamicChallenge" style="color:var(--orange);"></span>.
-            </p>
-            <p style="font-size: 14.5px; margin-top:12px; font-weight: 500; color:var(--text-dim);">
-              StudySpark's <span id="dynamicSolution" style="color:var(--text);"></span> feature is designed to solve
-              exactly this.
-            </p>
-          </div>
-
-          <button class="btn btn-primary" onclick="window.location.href='index.html'">Join the Beta
-            Waitlist</button>
+        <div class="cta-row" id="ctaRow">
+          <button class="btn" id="showFormBtn">
+            Join the waitlist
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
         </div>
 
+        <div class="success-msg" id="successMsg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          You're on the list — we'll be in touch.
+        </div>
+
+        <p class="fine-print" id="finePrint">No spam · Early access · Unsubscribe anytime</p>
+      </div>
+
+      <div class="benefits">
+        <div class="bcard">
+          <div class="emoji">🚀</div>
+          <h4>Early beta</h4>
+          <p>Get access before launch, ahead of everyone else.</p>
+        </div>
+        <div class="bcard">
+          <div class="emoji">🔔</div>
+          <h4>Launch updates</h4>
+          <p>Know the moment new features go live.</p>
+        </div>
+        <div class="bcard">
+          <div class="emoji">🎁</div>
+          <h4>Founder rewards</h4>
+          <p>Exclusive perks reserved for early supporters.</p>
+        </div>
+        <div class="bcard">
+          <div class="emoji">💬</div>
+          <h4>Shape StudySpark</h4>
+          <p>Your feedback directly influences what we build next.</p>
+        </div>
+      </div>
+
+      <div class="social">
+        <div class="avatars">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        Building StudySpark with students across Nigeria.
       </div>
     </div>
-  </section>
 
+    <footer>
+      Built with <span class="heart">❤</span> by Lunnovate — making studying less stressful.
+    </footer>
+
+  </div>
   <script>
-    // --- Product Validation Survey Logic ---
-    const totalSteps = 6;
-    let currentStep = 1;
+    const API_URL = 'https://script.google.com/macros/s/AKfycbw-hhD0sFno42H6-4UpJg-Bc_vnNwC25r4TZ3Tj6Oc8QBBHOAb0zx4cAd6McGzyhWKv/exec';
 
-    const form = document.getElementById('productSurveyForm');
-    const btnNext = document.getElementById('btnSurveyNext');
-    const btnBack = document.getElementById('btnSurveyBack');
-    const progressFill = document.getElementById('surveyProgressFill');
-    const resultScreen = document.getElementById('surveyResult');
+    const showFormBtn = document.getElementById("showFormBtn");
+    const ctaRow = document.getElementById("ctaRow");
+    const waitlistForm = document.getElementById("waitlistForm");
+    const successMsg = document.getElementById("successMsg");
+    const finePrint = document.getElementById("finePrint");
+    const emailInput = document.getElementById("emailInput");
 
-    // Solution Mapping based on Top Challenge
-    const featureSolutions = {
-      "Procrastination": "Gamified Streak System and Smart Scheduler",
-      "Forgetting": "AI Flashcards and Active Recall Simulator",
-      "Motivation": "Global Leaderboards and XP System",
-      "Time management": "Automated Timetable & Focus Mode",
-      "Distractions": "Strict Focus Mode",
-      "Poor notes": "Local Document Engine and AI Notebook"
-    };
+    // Show email form
+    showFormBtn.addEventListener("click", () => {
+      ctaRow.style.display = "none";
+      waitlistForm.style.display = "flex";
+      emailInput.focus();
+    });
 
-    function updateSurveyUI() {
-      // Update Progress Bar
-      if (progressFill) {
-        progressFill.style.width = `${(currentStep / totalSteps) * 100}%`;
+    // Submit waitlist
+    waitlistForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = emailInput.value.trim();
+
+      if (!email) {
+        emailInput.focus();
+        return;
       }
 
-      // Toggle Steps
-      document.querySelectorAll('.survey-step').forEach((step, index) => {
-        step.classList.toggle('active', index + 1 === currentStep);
-      });
+      const submitBtn = waitlistForm.querySelector('button[type="submit"]');
 
-      // Toggle Back Button
-      if (btnBack) {
-        btnBack.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
-      }
-
-      // Update Next/Submit Button Text
-      if (btnNext) {
-        if (currentStep === totalSteps) {
-          btnNext.innerText = 'Submit Feedback ✓';
-        } else {
-          btnNext.innerText = 'Next Step →';
-        }
-      }
-    }
-
-    // Step Validation
-    function validateCurrentStep() {
-      const currentStepEl = document.getElementById(`step${currentStep}`);
-      if (!currentStepEl) return false;
-
-      const inputs = currentStepEl.querySelectorAll('input[required], textarea[required]');
-      let isValid = true;
-      const radioGroups = new Set();
-
-      inputs.forEach(input => {
-        if (input.type === 'radio') {
-          radioGroups.add(input.name);
-        } else if (!input.value.trim()) {
-          isValid = false;
-          input.style.borderColor = 'red';
-        } else {
-          input.style.borderColor = 'var(--border)';
-        }
-      });
-
-      // Check grouped radios
-      radioGroups.forEach(name => {
-        const checked = currentStepEl.querySelector(`input[name="${name}"]:checked`);
-        const groupLabels = currentStepEl.querySelectorAll(`input[name="${name}"] ~ label`);
-
-        if (!checked) {
-          isValid = false;
-          groupLabels.forEach(lbl => lbl.style.borderColor = 'red');
-        } else {
-          groupLabels.forEach(lbl => lbl.style.borderColor = 'var(--border)');
-        }
-      });
-
-      if (!isValid) {
-        alert("Please answer all questions before proceeding.");
-      }
-      return isValid;
-    }
-
-    // Navigation Listeners
-    if (btnNext) {
-      btnNext.addEventListener('click', () => {
-        if (!validateCurrentStep()) return;
-
-        if (currentStep < totalSteps) {
-          currentStep++;
-          updateSurveyUI();
-        } else {
-          submitSurvey();
-        }
-      });
-    }
-
-    if (btnBack) {
-      btnBack.addEventListener('click', () => {
-        if (currentStep > 1) {
-          currentStep--;
-          updateSurveyUI();
-        }
-      });
-    }
-
-    // Helper for safe radio value extraction
-    function getRadioValue(name) {
-      const el = form.querySelector(`input[name="${name}"]:checked`);
-      return el ? el.value : "";
-    }
-
-    // Compile JSON & Show Result
-    function submitSurvey() {
-      // 1. Disable buttons and update text to prevent double-clicks
-      if (btnNext) {
-        btnNext.innerText = 'Sending...';
-        btnNext.disabled = true;
-        btnNext.style.opacity = '0.7';
-        btnNext.style.cursor = 'not-allowed';
-      }
-      if (btnBack) {
-        btnBack.disabled = true;
-        btnBack.style.opacity = '0.5';
-        btnBack.style.cursor = 'not-allowed';
-      }
-
-      const tools = Array.from(form.querySelectorAll('input[name="tools"]:checked')).map(el => el.value);
-
-      // Build JSON Object
-      const surveyData = {
-        student: {
-          school: form.school.value,
-          course: form.course.value,
-          level: getRadioValue('level')
-        },
-        studyHabits: {
-          hours: getRadioValue('studyHours'),
-          prepMethod: getRadioValue('prepMethod')
-        },
-        currentTools: tools,
-        painPoints: {
-          procrastination: getRadioValue('ppProcrastinate'),
-          forgetting: getRadioValue('ppForget'),
-          distracted: getRadioValue('ppDistracted')
-        },
-        topProblem: getRadioValue('topProblem'),
-        featureRatings: {
-          flashcards: parseInt(getRadioValue('featFlashcards')) || 0,
-          timetable: parseInt(getRadioValue('featTimetable')) || 0,
-          mockTest: parseInt(getRadioValue('featMock')) || 0,
-          gamification: parseInt(getRadioValue('featGamification')) || 0
-        },
-        wouldUse: getRadioValue('wouldUse'),
-        wouldPay: getRadioValue('wouldPay'),
-        suggestions: form.suggestions.value
-      };
-
-      console.log("🔥 Survey Data Captured:", JSON.stringify(surveyData, null, 2));
-
-      // Google Apps Script Web App URL
-      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-hhD0sFno42H6-4UpJg-Bc_vnNwC25r4TZ3Tj6Oc8QBBHOAb0zx4cAd6McGzyhWKv/exec";
-
-      // Send data to Google Sheets
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(surveyData),
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8',
-        }
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log("Success:", data);
-          showResultScreen(surveyData);
-        })
-        .catch(error => {
-          console.error("Error:", error);
-          alert("There was an error submitting your survey. Please try again.");
-
-          // Re-enable buttons if there is an error so the user can try again
-          if (btnNext) {
-            btnNext.innerText = 'Submit Feedback ✓';
-            btnNext.disabled = false;
-            btnNext.style.opacity = '1';
-            btnNext.style.cursor = 'pointer';
-          }
-          if (btnBack) {
-            btnBack.disabled = false;
-            btnBack.style.opacity = '1';
-            btnBack.style.cursor = 'pointer';
-          }
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Joining...";
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({
+            type: "waitlist",
+            email
+          })
         });
-    }
 
-    // Separated the UI update into its own function for cleaner flow
-    function showResultScreen(surveyData) {
-      // Update Dynamic End Screen
-      const userChallenge = surveyData.topProblem || "Procrastination";
-      const challengeEl = document.getElementById('dynamicChallenge');
-      const solutionEl = document.getElementById('dynamicSolution');
+        const data = await response.json();
 
-      if (challengeEl) challengeEl.innerText = userChallenge.toLowerCase();
-      if (solutionEl) solutionEl.innerText = featureSolutions[userChallenge] || featureSolutions["Procrastination"];
+        if (data.result === "error") {
+          throw new Error(data.message);
+        }
 
-      // Hide Form, Show Result
-      form.style.display = 'none';
-      if (progressFill && progressFill.parentElement) progressFill.parentElement.style.display = 'none';
-      if (resultScreen) resultScreen.style.display = 'block';
-    }
-  </script>
+        waitlistForm.style.display = "none";
+        finePrint.style.display = "none";
+        successMsg.style.display = "flex";
+
+      } catch (err) {
+        console.error(err);
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Join Waitlist";
+
+        alert("Something went wrong. Please try again.");
+      }
+    });</script>
+
 </body>
 
 </html>
