@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StudySpark — Study smarter. Stay consistent. Actually enjoy it.</title>
+  <title>Nahl Study smarter. Stay consistent. Actually enjoy it.</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
@@ -308,14 +308,14 @@
     }
 
     .logo .mark {
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
-      background: linear-gradient(135deg, var(--bg), var(--xp-gold));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 14px rgba(255, 122, 26, .4);
+      width: 34px;
+      /* Slightly increased to show off the icon details */
+      height: 34px;
+      border-radius: 10px;
+      /* Gives it a smooth, native app icon curve */
+      object-fit: cover;
+      /* Ensures the JPG fills the space without squishing */
+      box-shadow: 0 4px 14px rgba(255, 122, 26, 0.4);
     }
 
     .navlinks {
@@ -3044,6 +3044,86 @@
         display: none;
       }
     }
+
+    /*──────────────────────────────────────────────
+  MOBILE-SPECIFIC REFINEMENTS (< 600px)
+──────────────────────────────────────────────*/
+    @media (max-width: 600px) {
+
+      /* 1. Full-width hero buttons for better tap targets */
+      .btn-row {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .btn-primary,
+      .btn-ghost {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* 2. Stack impact cards into a single column so text doesn't squish */
+      .impact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* 3. Center and stack the footer layout */
+      .footer-top {
+        flex-direction: column;
+        text-align: center;
+        gap: 2rem;
+      }
+
+      .footer-social {
+        justify-content: center;
+      }
+
+      .footer-copy {
+        text-align: center;
+        line-height: 1.6;
+      }
+
+      /* 4. Adjust vertical pacing to maximize limited screen real estate */
+      .section-pad {
+        padding: 4rem 0;
+      }
+
+      #hero {
+        padding: 7.5rem 1.5rem 4rem;
+      }
+
+      #vision,
+      #final {
+        padding: 7rem 1.5rem;
+      }
+
+      /* 5. Scale down the internal padding of the device mockups */
+      .device,
+      .laptop {
+        padding: 1rem;
+        border-radius: 16px;
+      }
+
+      /* 6. Prevent long timeline headers from breaking awkwardly */
+      .timeline {
+        padding-left: 2rem;
+      }
+
+      .t-item h4 {
+        font-size: 1.15rem;
+      }
+    }
+
+    /* Fix for ultra-small screens (like iPhone SE - 375px) */
+    @media (max-width: 380px) {
+      .nav-logo {
+        font-size: 0.9rem;
+      }
+
+      .mob-menu a {
+        font-size: 1.6rem;
+      }
+    }
   </style>
 </head>
 
@@ -3062,14 +3142,14 @@
 
   <header>
     <nav>
-      <div class="logo"><img class="mark" src="logo.png" alt="StudySpark Logo">StudySpark</div>
+      <div class="logo"><img class="mark" src="ic_stat_notify.png" alt="Nahl Logo">Nahl</div>
       <div class="navlinks">
         <a href="#problem">Why</a>
         <a href="#features">Features</a>
         <a href="#proof">Reviews</a>
       </div>
       <div class="navright">
-        <button class="btn btn-primary btn-sm nav-cta" onclick="openModal()">Join the Waitlist</button>
+        <a href="YOUR_DOWNLOAD_LINK_HERE" class="btn btn-primary btn-sm nav-cta">Download Beta</a>
         <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu" aria-expanded="false">
           <span></span>
         </button>
@@ -3080,7 +3160,7 @@
         <a href="#problem">Why</a>
         <a href="#features">Features</a>
         <a href="#proof">Reviews</a>
-        <button class="btn btn-primary" onclick="openModal()">Join the Waitlist</button>
+        <a href="YOUR_DOWNLOAD_LINK_HERE" class="btn btn-primary">Download Beta</a>
       </div>
     </div>
   </header>
@@ -3089,15 +3169,16 @@
   <section class="hero">
     <div class="hero-inner">
       <div>
-        <div class="eyebrow reveal in"><span class="dot"></span>Beta opening soon — built for university
+        <div class="eyebrow reveal in"><span class="dot"></span>Beta opening soon built for university
           students</div>
         <h1 class="display reveal in">Stop cramming.<br>Start <span class="grad">earning XP.</span></h1>
-        <p class="sub reveal in" style="transition-delay:.1s">StudySpark turns your notes into a personalized
+        <p class="sub reveal in" style="transition-delay:.1s">Nahl turns your notes into a personalized
           study plan, your flashcards into AI-generated mock tests, and every study session into visible
-          progress —
+          progress
           so consistency finally feels good.</p>
         <div class="hero-ctas reveal in" style="transition-delay:.18s">
-          <button class="btn btn-primary" onclick="openModal()">Join the Beta Waitlist →</button>
+          <a href="YOUR_DOWNLOAD_LINK_HERE" class="btn btn-primary">Download Beta </a>
+          <button class="btn btn-ghost" onclick="openModal()">Join Waitlist</button>
         </div>
         <div class="hero-stats reveal in" style="transition-delay:.24s">
           <div class="hstat"><b class="counter" data-count="0" data-target="14200">0</b><span>study sessions
@@ -3303,7 +3384,7 @@
       <div class="problem-grid">
         <div class="problem-card reveal">
           <div class="quote display">"I study hard but forget everything."</div>
-          <div class="note">Rereading feels productive. It isn't — your brain needs recall, not repetition.
+          <div class="note">Rereading feels productive. It isn't your brain needs recall, not repetition.
           </div>
         </div>
         <div class="problem-card reveal" style="transition-delay:.06s">
@@ -3316,7 +3397,7 @@
         </div>
         <div class="problem-card reveal" style="transition-delay:.18s">
           <div class="quote display">"I lose motivation fast."</div>
-          <div class="note">Studying gives no feedback loop — so it's the first thing you drop.</div>
+          <div class="note">Studying gives no feedback loop so it's the first thing you drop.</div>
         </div>
         <div class="problem-card reveal" style="transition-delay:.24s">
           <div class="quote display">"I don't know where to start."</div>
@@ -3357,13 +3438,13 @@
     </div>
   </section>
 
-  <!-- PRODUCT SHOWCASE — 35% -->
+  <!-- PRODUCT SHOWCASE   35% -->
   <section id="showcase" class="showcase">
     <div class="wrap">
       <div class="section-head reveal">
         <span class="kicker">Inside the app</span>
         <h2 class="display">One system. Every feature doing one job well.</h2>
-        <p>Not a dashboard of toggles — a system that studies alongside you.</p>
+        <p>Not a dashboard of toggles a system that studies alongside you.</p>
       </div>
 
       <div class="feature-row reveal">
@@ -3373,26 +3454,26 @@
           <span class="feature-tag" style="background:rgba(139,92,246,.15); color:var(--purple);">AI Study
             Plans</span>
           <h3 class="display">A plan built around your real timetable.</h3>
-          <p>Add your courses and deadlines — StudySpark builds a day-by-day plan sized to your actual free time, and
+          <p>Add your courses and deadlines Nahl builds a day-by-day plan sized to your actual free time, and
             adjusts the moment your week changes.</p>
           <div class="feature-outcome">✓ 3.2 fewer cram sessions per term, on average</div>
         </div>
       </div>
 
       <div class="feature-row rev reveal">
-        <div class="feature-visual"><img src="Flashcards.png" t="StudySpark flashcard, tap to flip"></div>
+        <div class="feature-visual"><img src="Flashcards.png" t="Nahl flashcard, tap to flip"></div>
         <div class="feature-text">
           <span class="feature-tag" style="background:rgba(255,122,26,.15); color:var(--orange);">PDF →
             Flashcards</span>
           <h3 class="display">Your lecture slides, instantly quizzable.</h3>
-          <p>Upload a PDF of notes or slides — StudySpark extracts the key concepts and builds a full flashcard deck
+          <p>Upload a PDF of notes or slides Nahl extracts the key concepts and builds a full flashcard deck
             in seconds, ready for spaced repetition.</p>
           <div class="feature-outcome">✓ A 40-page PDF becomes a 25-minute review</div>
         </div>
       </div>
 
       <div class="feature-row reveal">
-        <div class="feature-visual"><img src="mocketest.png" alt="StudySpark timed mock test question"></div>
+        <div class="feature-visual"><img src="mocketest.png" alt="Nahl timed mock test question"></div>
         <div class="feature-text">
           <span class="feature-tag" style="background:rgba(34,197,94,.15); color:var(--green);">AI Mock Tests</span>
           <h3 class="display">Practice under real exam conditions.</h3>
@@ -3437,14 +3518,14 @@
           <div class="step-num">01</div>
           <div class="step-body">
             <h3 class="display">Create your account</h3>
-            <p>Sign up in under a minute — no credit card, no long setup.</p>
+            <p>Sign up in under a minute no credit card, no long setup.</p>
           </div>
         </div>
         <div class="step-row">
           <div class="step-num">02</div>
           <div class="step-body">
             <h3 class="display">Upload notes or your timetable</h3>
-            <p>Drop in a PDF, photo, or course schedule. StudySpark organizes it for you.</p>
+            <p>Drop in a PDF, photo, or course schedule. Nahl organizes it for you.</p>
           </div>
         </div>
         <div class="step-row">
@@ -3461,7 +3542,7 @@
   <section style="background:var(--bg-soft);">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="kicker">Why StudySpark</span>
+        <span class="kicker">Why Nahl</span>
         <h2 class="display">Compared to what you're using now.</h2>
       </div>
       <div class="compare-wrap reveal">
@@ -3472,50 +3553,50 @@
               <th>Traditional studying</th>
               <th>Note apps</th>
               <th>Flashcard apps</th>
-              <th class="ss-col">StudySpark</th>
+              <th class="ss-col">Nahl</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td class="feat-name">Personalized study plan</td>
-              <td><span class="no">—</span></td>
-              <td><span class="no">—</span></td>
-              <td><span class="no">—</span></td>
+              <td><span class="no"> </span></td>
+              <td><span class="no"> </span></td>
+              <td><span class="no"> </span></td>
               <td class="ss-col"><span class="yes">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">AI-generated flashcards</td>
-              <td><span class="no">—</span></td>
-              <td><span class="no">—</span></td>
+              <td><span class="no"> </span></td>
+              <td><span class="no"> </span></td>
               <td><span class="no">Manual</span></td>
               <td class="ss-col"><span class="yes">✓ Automatic</span></td>
             </tr>
             <tr>
               <td class="feat-name">Mock tests from your notes</td>
-              <td><span class="no">—</span></td>
-              <td><span class="no">—</span></td>
-              <td><span class="no">—</span></td>
+              <td><span class="no"> </span></td>
+              <td><span class="no"> </span></td>
+              <td><span class="no"> </span></td>
               <td class="ss-col"><span class="yes">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">Gamified consistency (XP, streaks)</td>
-              <td><span class="no">—</span></td>
-              <td><span class="no">—</span></td>
+              <td><span class="no"> </span></td>
+              <td><span class="no"> </span></td>
               <td><span class="no">Rarely</span></td>
               <td class="ss-col"><span class="yes">✓</span></td>
             </tr>
             <tr>
               <td class="feat-name">Progress analytics</td>
-              <td><span class="no">—</span></td>
+              <td><span class="no"> </span></td>
               <td><span class="no">Basic</span></td>
               <td><span class="no">Basic</span></td>
               <td class="ss-col"><span class="yes">✓ Full breakdown</span></td>
             </tr>
             <tr>
               <td class="feat-name">Built for university course load</td>
-              <td><span class="no">—</span></td>
-              <td><span class="no">—</span></td>
-              <td><span class="no">—</span></td>
+              <td><span class="no"> </span></td>
+              <td><span class="no"> </span></td>
+              <td><span class="no"> </span></td>
               <td class="ss-col"><span class="yes">✓</span></td>
             </tr>
           </tbody>
@@ -3578,7 +3659,7 @@
     <div class="wrap">
       <div class="section-head reveal">
         <span class="kicker">Have your say</span>
-        <h2 class="display">Help shape StudySpark.</h2>
+        <h2 class="display">Help shape Nahl.</h2>
         <p>Are you an early tester? Drop your feedback below to be featured on our wall of fame.</p>
       </div>
 
@@ -3609,7 +3690,7 @@
 
           <div class="field" style="margin-top: 16px;">
             <label for="revText">Your Review</label>
-            <textarea id="revText" placeholder="How has StudySpark changed your study routine? Be honest!"
+            <textarea id="revText" placeholder="How has Nahl changed your study routine? Be honest!"
               required></textarea>
           </div>
 
@@ -3633,8 +3714,8 @@
     <div class="wrap">
       <div class="final-cta reveal">
         <h2>Stop leaving your grades to chance.</h2>
-        <p>Join the beta waitlist today and lock in free early-adopter access before our public launch.</p>
-        <button class="btn btn-ghost" onclick="openModal()">Secure Your Spot →</button>
+        <p>Download the beta today and lock in free early-adopter access before our public launch.</p>
+        <a href="YOUR_DOWNLOAD_LINK_HERE" class="btn btn-ghost">Download Beta Now </a>
       </div>
     </div>
   </section>
@@ -3643,7 +3724,7 @@
     <div class="modal">
       <button class="modal-close" onclick="closeModal()">✕</button>
       <h3>Join the Waitlist</h3>
-      <p class="msub">Get early access to StudySpark.</p>
+      <p class="msub">Get early access to Nahl.</p>
       <!-- Update this specific part inside your modal -->
       <div class="field">
         <label>Email Address</label>
@@ -3657,7 +3738,7 @@
   <footer>
     <div class="foot-grid">
       <div class="foot-col">
-        <div class="logo"><img class="mark" src="logo.png" alt="StudySpark Logo">StudySpark</div>
+        <div class="logo"><img class="mark" src="ic_stat_notify.png" alt="Nahl Logo">Nahl</div>
         <p style="font-size: 13.5px; color: var(--text-faint); line-height: 1.6;">The AI Study OS for university
           students. Actually enjoy learning.</p>
       </div>
@@ -3678,13 +3759,13 @@
       </div>
     </div>
     <div class="foot-bottom">
-      <span>© 2026 StudySpark. All rights reserved.</span>
+      <span>© 2026 Nahl. All rights reserved.</span>
       <span>Built by Lunnovate.</span>
     </div>
   </footer>
 
   <script>
-      // 1. Reveal-on-scroll — self-contained, no CDN dependency, runs first
+      // 1. Reveal-on-scroll   self-contained, no CDN dependency, runs first
       (function () {
         var els = document.querySelectorAll('.reveal');
         var revealIO = new IntersectionObserver(function (entries) {
@@ -3698,14 +3779,14 @@
         els.forEach(function (el) { revealIO.observe(el); });
       })();
 
-    // 2. Icons (guarded — won't block anything else if it fails)
+    // 2. Icons (guarded   won't block anything else if it fails)
     try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (e) { console.warn('lucide init failed', e); }
 
     // 3. Modal Logic
     function openModal() { document.getElementById('modal').classList.add('open'); }
     function closeModal() { document.getElementById('modal').classList.remove('open'); }
 
-    // 4. Dark Mode Toggle Logic (guarded — the button may not exist in every layout)
+    // 4. Dark Mode Toggle Logic (guarded   the button may not exist in every layout)
     var themeToggleBtn = document.querySelector('.theme-toggle');
     if (themeToggleBtn) {
       themeToggleBtn.addEventListener('click', function () {
