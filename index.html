@@ -3957,6 +3957,28 @@
       }
     }
 
+    // 7. Streak Rail Scroll Progress
+    window.addEventListener('scroll', function () {
+      const streakFill = document.getElementById('streakFill');
+      const streakCount = document.getElementById('streakCount');
+      
+      if (!streakFill || !streakCount) return;
+
+      // Calculate the scroll percentage (0 to 100)
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      
+      // Prevent division by zero on very short pages
+      const scrollPercent = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      
+      // Update the CSS height of the orange fill bar
+      streakFill.style.height = `${scrollPercent}%`;
+      
+      // Update the text (Scales from DAY 0 to DAY 30 as you reach the bottom)
+      const currentDay = Math.floor((scrollPercent / 100) * 30);
+      streakCount.innerText = `DAY ${currentDay}`;
+    });
+    
     // Run the fetch function as soon as the page loads
     document.addEventListener('DOMContentLoaded', loadReviews);
   </script>
