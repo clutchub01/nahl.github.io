@@ -3124,6 +3124,67 @@
         font-size: 1.6rem;
       }
     }
+
+    /* Download Guide Styles */
+    .install-guide {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+      text-align: left;
+    }
+
+    .install-step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--bg);
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .step-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 122, 26, 0.15);
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      flex-shrink: 0;
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .install-step h4 {
+      font-size: 14.5px;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .install-step p {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+
+    .fallback-download {
+      font-size: 12.5px;
+      text-align: center;
+      margin-top: 24px;
+      color: var(--text-faint);
+    }
+
+    .fallback-download a {
+      color: var(--orange);
+      text-decoration: underline;
+      font-weight: 600;
+    }
   </style>
 </head>
 
@@ -3149,7 +3210,7 @@
         <a href="#proof">Reviews</a>
       </div>
       <div class="navright">
-        <a href="YOUR_DOWNLOAD_LINK_HERE" class="btn btn-primary btn-sm nav-cta">Download Beta</a>
+        <button onclick="startDownload()" class="btn btn-primary btn-sm nav-cta">Download Beta</button>
         <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu" aria-expanded="false">
           <span></span>
         </button>
@@ -3160,7 +3221,7 @@
         <a href="#problem">Why</a>
         <a href="#features">Features</a>
         <a href="#proof">Reviews</a>
-        <a href="YOUR_DOWNLOAD_LINK_HERE" class="btn btn-primary">Download Beta</a>
+        <button onclick="startDownload()" class="btn btn-primary">Download Beta</button>
       </div>
     </div>
   </header>
@@ -3177,7 +3238,7 @@
           progress
           so consistency finally feels good.</p>
         <div class="hero-ctas reveal in" style="transition-delay:.18s">
-          <a href="YOUR_DOWNLOAD_LINK_HERE" class="btn btn-primary">Download Beta </a>
+          <button onclick="startDownload()" class="btn btn-primary">Download Beta</button>
           <button class="btn btn-ghost" onclick="openModal()">Join Waitlist</button>
         </div>
         <div class="hero-stats reveal in" style="transition-delay:.24s">
@@ -3715,7 +3776,7 @@
       <div class="final-cta reveal">
         <h2>Stop leaving your grades to chance.</h2>
         <p>Download the beta today and lock in free early-adopter access before our public launch.</p>
-        <a href="YOUR_DOWNLOAD_LINK_HERE" class="btn btn-ghost">Download Beta Now </a>
+        <button onclick="startDownload()" class="btn btn-ghost">Download Beta Now</button>
       </div>
     </div>
   </section>
@@ -3731,6 +3792,45 @@
         <input type="email" id="waitlistEmail" placeholder="you@university.edu" required>
       </div>
       <button type="button" class="btn btn-primary modal-btn" onclick="submitWaitlist()">Join Waitlist</button>
+    </div>
+  </div>
+
+  <!-- DOWNLOAD & INSTALL GUIDE MODAL -->
+  <div class="modal-overlay" id="downloadModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeDownloadModal()">✕</button>
+      <h3>Downloading Nahl...</h3>
+      <p class="msub" id="downloadStatus">Your download will start in a moment.</p>
+
+      <div class="install-guide">
+        <div class="install-step">
+          <div class="step-icon">1</div>
+          <div>
+            <h4>Open the downloaded file</h4>
+            <p>Tap on <b>Nahl-beta_0.1.apk</b> in your browser downloads or notifications.</p>
+          </div>
+        </div>
+        <div class="install-step">
+          <div class="step-icon">2</div>
+          <div>
+            <h4>Allow Installation</h4>
+            <p>If prompted, tap <b>Settings</b> and toggle on "Allow from this source". This is required for Beta apps.
+            </p>
+          </div>
+        </div>
+        <div class="install-step">
+          <div class="step-icon">3</div>
+          <div>
+            <h4>Install & Study</h4>
+            <p>Tap <b>Install</b>, open Nahl, and start turning your notes into XP!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="fallback-download">
+        <span style="display:block; margin-bottom: 8px;">Note: Beta is currently Android only.</span>
+        Didn't start? <a href="Nahl-beta_0.1.apk" target="_blank">Click here to download manually</a>
+      </div>
     </div>
   </div>
 
@@ -3961,24 +4061,52 @@
     window.addEventListener('scroll', function () {
       const streakFill = document.getElementById('streakFill');
       const streakCount = document.getElementById('streakCount');
-      
+
       if (!streakFill || !streakCount) return;
 
       // Calculate the scroll percentage (0 to 100)
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      
+
       // Prevent division by zero on very short pages
       const scrollPercent = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-      
+
       // Update the CSS height of the orange fill bar
       streakFill.style.height = `${scrollPercent}%`;
-      
+
       // Update the text (Scales from DAY 0 to DAY 30 as you reach the bottom)
       const currentDay = Math.floor((scrollPercent / 100) * 30);
       streakCount.innerText = `DAY ${currentDay}`;
     });
-    
+
+    // --- DOWNLOAD MODAL LOGIC ---
+    function startDownload() {
+      // 1. Open the modal
+      document.getElementById('downloadModal').classList.add('open');
+
+      // 2. Trigger download automatically after a short delay
+      setTimeout(() => {
+        const link = document.createElement('a');
+        link.href = 'Nahl-beta_0.1.apk';
+        link.download = 'Nahl-beta_0.1.apk';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Update the status text
+        document.getElementById('downloadStatus').innerText = "Download started! Follow these steps to install:";
+      }, 1200);
+    }
+
+    function closeDownloadModal() {
+      document.getElementById('downloadModal').classList.remove('open');
+
+      // Reset text for the next time they open it
+      setTimeout(() => {
+        document.getElementById('downloadStatus').innerText = "Your download will start in a moment.";
+      }, 400);
+    }
+
     // Run the fetch function as soon as the page loads
     document.addEventListener('DOMContentLoaded', loadReviews);
   </script>
