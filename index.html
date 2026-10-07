@@ -4082,6 +4082,20 @@
     });
 
     // --- DOWNLOAD MODAL LOGIC ---
+    function logDownload(source) {
+  try {
+    fetch(API_URL, {
+      method: 'POST', keepalive: true,
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        type: 'download', source, version: '0.4',
+        returning: !!localStorage.getItem('nahl_dl'),
+        ua: navigator.userAgent
+      })
+    }).catch(() => {});
+    localStorage.setItem('nahl_dl', '1');
+  } catch (e) {}
+}
     function startDownload() {
       // 1. Open the modal
       document.getElementById('downloadModal').classList.add('open');
@@ -4093,6 +4107,7 @@
         link.download = 'Nahl-beta_0.4.apk';
         document.body.appendChild(link);
         link.click();
+        logDownload('auto');
         document.body.removeChild(link);
 
         // Update the status text
